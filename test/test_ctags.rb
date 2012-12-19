@@ -1,7 +1,7 @@
 #coding: utf-8
 
 require 'test/unit'
-require File.join(File.dirname(__FILE__), '..', '/lib/ctags.rb')
+require File.expand_path('../../lib/ctags.rb', __FILE__)
 
 class CtagsTest < Test::Unit::TestCase
   def test_tags_for_file
