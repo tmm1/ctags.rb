@@ -1,4 +1,5 @@
 require 'posix/spawn'
+require 'tempfile'
 
 module Ctags
   class Error < StandardError
@@ -9,16 +10,33 @@ module Ctags
 
     BIN = File.expand_path("../../../ext/dst/bin/ctags", __FILE__)
 
-    def tags_for_code(file, code)
-      tags_for_file(file, code)
+    def tags_for_code(filename, code)
+      tags_for_file(filename, code)
     end
 
-    def tags_for_file(file, code=nil)
-      if code
-        child = Child.new(BIN, '-f', '-', '--extra=+f', '--excmd=number', "--stdin-filename=#{file}", :input => code)
-      else
-        child = Child.new(BIN, '-f', '-', '--extra=+f', '--excmd=number', file)
-      end
+    def tags_for_file(filename, code=nil)
+      args = [
+        '-o', '-',
+        '--fields=+KlnzsStimfa',
+        '--excmd=pattern'
+      ]
+
+      child =
+        if code
+          # XXX stdin is not seekable
+          # args << "--stdin-filename=#{filename}"
+          # args << {:input => code}
+
+          tempfile = Tempfile.new(['ctags-input', File.extname(filename)])
+          tempfile.write(code)
+          tempfile.close
+          args << tempfile.path
+
+          Child.new(BIN, *args)
+        else
+          args << filename
+          Child.new(BIN, *args)
+        end
 
       if !child.status.success?
         raise Error, child.err
@@ -27,16 +45,25 @@ module Ctags
       tags = {}
 
       child.out.each_line.map do |line|
-        name, file, line, type, *rest = line.split("\t")
-        tags[name] = {
-          :file => file,
-          :line => line.sub(';"','').to_i,
-          :type => type.strip
+        tag, file, rest = line.strip.split("\t", 3)
+        pattern, fields = rest.split("/;\"\t", 2)
+
+        tag = tags[tag] = {
+          :filename => code ? filename : file,
+          :pattern => pattern.sub('/^','').chomp('$').gsub('\\\\','\\')
         }
-        rest.each do |part|
-          key, value = part.strip.split(':', 2)
-          tags[name][key.to_sym] = value
+
+        fields.split("\t").each do |field|
+          if field == 'file:'
+            key, value = :scope, 'file'
+          else
+            key, value = field.split(":", 2)
+          end
+
+          tag[key.to_sym] = value
         end
+
+        tag[:line] = tag[:line].to_i
       end
 
       tags
