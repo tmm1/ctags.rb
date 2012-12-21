@@ -33,7 +33,11 @@ module Ctags
           tempfile.close
           args << tempfile.path
 
-          Child.new(BIN, *args)
+          begin
+            Child.new(BIN, *args)
+          ensure
+            tempfile.unlink
+          end
         else
           args << filename
           Child.new(BIN, *args)
