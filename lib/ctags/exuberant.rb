@@ -47,14 +47,15 @@ module Ctags
         raise Error, child.err
       end
 
-      tags = {}
+      tags = []
 
       child.out.each_line.map do |line|
-        tag, file, rest = line.strip.split("\t", 3)
+        name, path, rest = line.strip.split("\t", 3)
         pattern, fields = rest.split("/;\"\t", 2)
 
-        tag = tags[tag] = {
-          :filename => code ? filename : file,
+        tag = {
+          :name => name,
+          :path => code ? filename : path,
           :pattern => pattern.sub('/^','').chomp('$').gsub('\\\\','\\')
         }
 
@@ -69,6 +70,8 @@ module Ctags
         end
 
         tag[:line] = tag[:line].to_i
+
+        tags << tag
       end
 
       tags

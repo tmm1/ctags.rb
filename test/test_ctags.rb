@@ -5,9 +5,9 @@ require 'ctags'
 class CtagsTest < Test::Unit::TestCase
   def test_tags_for_file
     tags = Ctags.tags_for_file(__FILE__)
-    tag = tags[__method__.to_s]
+    tag = tags.find{ |t| t[:name] == __method__.to_s }
 
-    assert_equal __FILE__,    tag[:filename]
+    assert_equal __FILE__,    tag[:path]
     assert_equal __LINE__-5,  tag[:line]
     assert_equal 'CtagsTest', tag[:class]
     assert_equal 'method',    tag[:kind]
@@ -15,9 +15,9 @@ class CtagsTest < Test::Unit::TestCase
 
   def test_tags_for_code
     tags = Ctags.tags_for_code('file.rb', File.read(__FILE__))
-    tag = tags[__method__.to_s]
+    tag = tags.find{ |t| t[:name] == __method__.to_s }
 
-    assert_equal 'file.rb',   tag[:filename]
+    assert_equal 'file.rb',   tag[:path]
     assert_equal __LINE__-5,  tag[:line]
     assert_equal 'CtagsTest', tag[:class]
     assert_equal 'method',    tag[:kind]
