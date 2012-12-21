@@ -18,6 +18,7 @@ module Ctags
       args = [
         '-o', '-',
         '--fields=+KlnzsStimfa',
+        '--sort=no',
         '--excmd=pattern'
       ]
 
