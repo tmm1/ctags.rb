@@ -32,3 +32,11 @@ Rake::TestTask.new 'test' do |t|
   t.ruby_opts = ['-rubygems']
 end
 task :test => :build
+
+# ==========================================================
+# Benchmarks
+# ==========================================================
+
+task :bench => :build do
+  ruby 'bench.rb'
+end
