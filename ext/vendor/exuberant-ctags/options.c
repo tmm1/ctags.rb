@@ -148,6 +148,7 @@ optionValues Option = {
 	FALSE,      /* --tag-relative */
 	FALSE,      /* --totals */
 	FALSE,      /* --line-directives */
+	FALSE,      /* --json */
 #ifdef DEBUG
 	0, 0        /* -D, -b */
 #endif
@@ -228,6 +229,8 @@ static optionDescription LongOptionDescription [] = {
  {1,"       Print this option summary."},
  {1,"  --if0=[yes|no]"},
  {1,"       Should C code within #if 0 conditional branches be parsed [no]?"},
+ {1,"  --json"},
+ {1,"       Enter interactive json command mode."},
  {1,"  --<LANG>-kinds=[+|-]kinds"},
  {1,"       Enable/disable tag kinds for language <LANG>."},
  {1,"  --langdef=name"},
@@ -396,7 +399,7 @@ extern void setDefaultTagFileName (void)
 extern boolean filesRequired (void)
 {
 	boolean result = FilesRequired;
-	if (Option.recurse || Option.stdinFileName)
+	if (Option.recurse || Option.json)
 		result = FALSE;
 	return result;
 }
@@ -960,14 +963,12 @@ static void processLanguageForceOption (
 		Option.language = language;
 }
 
-static void processStdinFileName (
-    const char *const option, const char *const parameter)
+static void processJsonOption (
+		const char *const option,
+		const char *const parameter __unused__)
 {
-  if (strlen(parameter) == 0) {
-    error (FATAL, "No filename specified for --stdin-filename");
-  }
-
-  Option.stdinFileName = stringCopy(parameter);
+	Option.json = TRUE;
+	Option.tagFileName = stringCopy ("-");
 }
 
 static char* skipPastMap (char* p)
@@ -1389,6 +1390,7 @@ static parametricOption ParametricOptions [] = {
 	{ "filter-terminator",      processFilterTerminatorOption,  TRUE    },
 	{ "format",                 processFormatOption,            TRUE    },
 	{ "help",                   processHelpOption,              TRUE    },
+	{ "json",                   processJsonOption,              TRUE    },
 	{ "lang",                   processLanguageForceOption,     FALSE   },
 	{ "language",               processLanguageForceOption,     FALSE   },
 	{ "language-force",         processLanguageForceOption,     FALSE   },
@@ -1401,8 +1403,7 @@ static parametricOption ParametricOptions [] = {
 	{ "list-languages",         processListLanguagesOption,     TRUE    },
 	{ "options",                processOptionFile,              FALSE   },
 	{ "sort",                   processSortOption,              TRUE    },
-	{ "version",                processVersionOption,           TRUE    },
-	{ "stdin-filename",         processStdinFileName,           FALSE   }
+	{ "version",                processVersionOption,           TRUE    }
 };
 
 static booleanOption BooleanOptions [] = {
@@ -1693,7 +1694,7 @@ extern void previewFirstOption (cookedArgs* const args)
 		else if (strcmp (args->item, "options") == 0  &&
 				strcmp (args->parameter, "NONE") == 0)
 		{
-			fprintf (stderr, "No options will be read from files or environment\n");
+			/* fprintf (stderr, "No options will be read from files or environment\n");*/
 			SkipConfiguration = TRUE;
 			cArgForth (args);
 		}
@@ -1830,7 +1831,6 @@ extern void freeOptionResources (void)
 	freeString (&Option.tagFileName);
 	freeString (&Option.fileList);
 	freeString (&Option.filterTerminator);
-	freeString (&Option.stdinFileName);
 
 	freeList (&Excluded);
 	freeList (&Option.ignore);

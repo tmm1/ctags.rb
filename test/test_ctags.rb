@@ -22,4 +22,10 @@ class CtagsTest < Test::Unit::TestCase
     assert_equal 'CtagsTest', tag[:class]
     assert_equal 'method',    tag[:kind]
   end
+
+  def test_invalid_file
+    assert_raises Ctags::Error do
+      Ctags.tags_for_file('invalid.rb')
+    end
+  end
 end

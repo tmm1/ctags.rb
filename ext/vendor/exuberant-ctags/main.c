@@ -22,7 +22,9 @@
 *   INCLUDE FILES
 */
 #include "general.h"  /* must always come first */
+#include "ctags.h"
 
+#include <jansson.h>
 #include <string.h>
 
 /*  To provide timings features if available.
@@ -293,7 +295,7 @@ static boolean createTagsForEntry (const char *const entryName)
 		verbose ("excluding \"%s\"\n", entryName);
 	else if (status->isSymbolicLink  &&  ! Option.followLinks)
 		verbose ("ignoring \"%s\" (symbolic link)\n", entryName);
-	else if (! status->exists && ! Option.stdinFileName)
+	else if (! status->exists)
 		error (WARNING | PERROR, "cannot open source file \"%s\"", entryName);
 	else if (status->isDirectory)
 		resize = recurseIntoDirectory (entryName);
@@ -466,6 +468,65 @@ static boolean etagsInclude (void)
 	return (boolean)(Option.etags && Option.etagsInclude != NULL);
 }
 
+static void interactiveJsonMode ()
+{
+	char buffer[1024];
+	json_t *request;
+
+	openTagFile ();
+	fprintf (stdout, "{\"name\": \"" PROGRAM_NAME "\", \"version\": \"" PROGRAM_VERSION "\"}\n");
+	fflush (stdout);
+
+	while (fgets (buffer, sizeof(buffer), stdin)) {
+		if (buffer[0] == '\n')
+			continue;
+
+		request = json_loads (buffer, JSON_DISABLE_EOF_CHECK, NULL);
+		if (! request) {
+			error (FATAL, "invalid json");
+			goto next;
+		}
+
+		json_t *command = json_object_get (request, "command");
+		if (! command) {
+			error (FATAL, "command name not found");
+			goto next;
+		}
+
+		if (!strcmp ("list-parsers", json_string_value (command))) {
+		} else if (!strcmp ("generate-tags", json_string_value (command))) {
+			json_int_t size = -1;
+			const char *filename;
+
+			if (json_unpack (request, "{s?I ss}", "size", &size, "filename", &filename) == -1) {
+				error (FATAL, "invalid generate-tags request");
+				goto next;
+			}
+
+			if (size == -1) { /* read from disk */
+				createTagsForEntry (filename);
+			} else {			/* read nbytes from stream */
+				size_t nbytes = (size_t)size;
+				File.buffer = malloc (nbytes+1);
+				File.buffer [nbytes] = 0;
+				File.buffer_size = fread (File.buffer, 1, nbytes, stdin);
+				parseFile (filename);
+				free (File.buffer);
+				File.buffer = NULL;
+			}
+
+			fprintf (stdout, "{\"completed\": \"generate-tags\"}\n");
+			fflush (stdout);
+		} else {
+			error (FATAL, "unknown command name");
+			goto next;
+		}
+
+next:
+		json_decref (request);
+	}
+}
+
 static void makeTags (cookedArgs *args)
 {
 	clock_t timeStamps [3];
@@ -478,7 +539,7 @@ static void makeTags (cookedArgs *args)
 		if (filesRequired ())
 			error (FATAL, "No files specified. Try \"%s --help\".",
 				getExecutableName ());
-		else if (! Option.recurse && ! Option.stdinFileName && ! etagsInclude ())
+		else if (! Option.recurse && ! etagsInclude ())
 			return;
 	}
 
@@ -506,10 +567,6 @@ static void makeTags (cookedArgs *args)
 	if (! files  &&  Option.recurse)
 		resize = recurseIntoDirectory (".");
 	
-	if (Option.stdinFileName)
-	{
-	  resize = createTagsForEntry(Option.stdinFileName);
-	}
 
 	timeStamp (1);
 
@@ -564,7 +621,11 @@ extern int main (int __unused__ argc, char **argv)
 	verbose ("Reading initial options from command line\n");
 	parseOptions (args);
 	checkOptions ();
-	makeTags (args);
+	if (Option.json)
+		interactiveJsonMode ();
+	else
+		makeTags (args);
+
 
 	/*  Clean up.
 	 */

@@ -660,12 +660,12 @@ extern boolean parseFile (const char *const fileName)
 		verbose ("ignoring %s (language disabled)\n", fileName);
 	else
 	{
-		if (Option.filter)
+		if (Option.filter && ! Option.json)
 			openTagFile ();
 
 		tagFileResized = createTagsWithFallback (fileName, language);
 
-		if (Option.filter)
+		if (Option.filter && ! Option.json)
 			closeTagFile (tagFileResized);
 		addTotals (1, 0L, 0L);
 

@@ -38,6 +38,8 @@
 # include <io.h>
 #endif
 
+#include <jansson.h>
+
 #include "debug.h"
 #include "ctags.h"
 #include "entry.h"
@@ -806,6 +808,69 @@ static int writeCtagsEntry (const tagEntryInfo *const tag)
 	return length;
 }
 
+static int writeJsonEntry (const tagEntryInfo *const tag)
+{
+	char *const line = readSourceLine (TagFile.vLine, tag->filePosition, 0);
+	json_t *response = json_pack ("{ss ss si ss ss ss ss}",
+		"_type", "tag",
+		"name", tag->name,
+		"line", tag->lineNumber,
+		"path", tag->sourceFileName,
+		"kind", tag->kindName,
+		"language", tag->language,
+		"pattern", line
+	);
+
+	if (Option.extensionFields.scope  &&
+			tag->extensionFields.scope [0] != NULL  &&
+			tag->extensionFields.scope [1] != NULL)
+		json_object_set_new (response,
+				tag->extensionFields.scope [0],
+				json_string (tag->extensionFields.scope [1]));
+
+	if (Option.extensionFields.typeRef  &&
+			tag->extensionFields.typeRef [0] != NULL  &&
+			tag->extensionFields.typeRef [1] != NULL) {
+		char *val;
+		asprintf(&val, "%s:%s",
+				tag->extensionFields.typeRef [0],
+				tag->extensionFields.typeRef [1]);
+		json_object_set_new (response,
+				"typeref",
+				json_string (val));
+		free (val);
+	}
+
+	if (Option.extensionFields.fileScope  &&  tag->isFileScope)
+		json_object_set_new (response, "scope",
+				json_string ("file"));
+
+	if (Option.extensionFields.inheritance  &&
+			tag->extensionFields.inheritance != NULL)
+		json_object_set_new (response, "inherits",
+				json_string (tag->extensionFields.inheritance));
+
+	if (Option.extensionFields.access  &&  tag->extensionFields.access != NULL)
+		json_object_set_new (response, "access",
+				json_string (tag->extensionFields.access));
+
+	if (Option.extensionFields.implementation  &&
+			tag->extensionFields.implementation != NULL)
+		json_object_set_new (response, "implementation",
+				json_string (tag->extensionFields.implementation));
+
+	if (Option.extensionFields.signature  &&
+			tag->extensionFields.signature != NULL)
+		json_object_set_new (response, "signature",
+				json_string (tag->extensionFields.signature));
+
+	json_dumpf (response, stdout, 0);
+	fprintf (stdout, "\n");
+	fflush (stdout);
+
+	json_decref (response);
+}
+
 extern void makeTagEntry (const tagEntryInfo *const tag)
 {
 	Assert (tag->name != NULL);
@@ -816,7 +881,11 @@ extern void makeTagEntry (const tagEntryInfo *const tag)
 		int length = 0;
 
 		DebugStatement ( debugEntry (tag); )
-		if (Option.xref)
+		if (Option.json)
+		{
+			writeJsonEntry (tag);
+		}
+		else if (Option.xref)
 		{
 			if (! tag->isFileEntry)
 				length = writeXrefEntry (tag);

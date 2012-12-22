@@ -72,6 +72,8 @@ typedef struct sInputFile {
 	vString    *line;          /* last line read from file */
 	const unsigned char* currentLine;  /* current line being worked on */
 	FILE       *fp;            /* stream used for reading the file */
+	char       *buffer;        /* buffer backing the stream */
+	size_t     buffer_size;    /* size of stream buffer */
 	unsigned long lineNumber;  /* line number in the input file */
 	fpos_t      filePosition;  /* file position of current line */
 	int         ungetch;       /* a single character that was ungotten */
@@ -95,7 +97,8 @@ typedef struct sInputFile {
 /*
 *   GLOBAL VARIABLES
 */
-extern CONST_FILE inputFile File;
+//extern CONST_FILE inputFile File;
+extern inputFile File; // remove CONST_FILE for File.buffer hack
 
 /*
 *   FUNCTION PROTOTYPES

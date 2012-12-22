@@ -240,6 +240,10 @@ static boolean parseLineDirective (void)
  *   Source file I/O operations
  */
 
+#ifdef HAVE_FMEMOPEN_C
+#include <fmemopen.c> /* hax */
+#endif
+
 /*  This function opens a source file, and resets the line counter.  If it
  *  fails, it will display an error message and leave the File.fp set to NULL.
  */
@@ -260,10 +264,11 @@ extern boolean fileOpen (const char *const fileName, const langType language)
 		File.fp = NULL;
 	}
 	
-	if (Option.stdinFileName) {
-	  File.fp = stdin;
+	if (File.buffer) {
+		File.fp = fmemopen (File.buffer, File.buffer_size, openMode);
 	} else {
-	  File.fp = fopen (fileName, openMode);
+		File.fp = fopen (fileName, openMode);
+		File.buffer = NULL;
 	}
 
 	if (File.fp == NULL)

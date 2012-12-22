@@ -61,6 +61,8 @@
 #endif
 #include "debug.h"
 #include "routines.h"
+#include "options.h"
+#include <jansson.h>
 
 /*
 *   MACROS
@@ -214,18 +216,39 @@ extern void error (
 	va_list ap;
 
 	va_start (ap, format);
-	fprintf (errout, "%s: %s", getExecutableName (),
-			selected (selection, WARNING) ? "Warning: " : "");
-	vfprintf (errout, format, ap);
-	if (selected (selection, PERROR))
+	if (Option.json) {
+		char *reason;
+		vasprintf (&reason, format, ap);
+
+		json_t *response = json_object ();
+		json_object_set_new (response, "error", json_string (reason));
+		if (selected (selection, WARNING))
+			json_object_set_new (response, "warning", json_true ());
+		if (selected (selection, FATAL))
+			json_object_set_new (response, "fatal", json_true ());
+		if (selected (selection, PERROR)) {
+			json_object_set_new (response, "errno", json_integer (errno));
+			json_object_set_new (response, "perror", json_string (strerror (errno)));
+		}
+		json_dumpf (response, stdout, 0);
+		fprintf (stdout, "\n");
+
+		json_decref (response);
+		free (reason);
+	} else {
+		fprintf (errout, "%s: %s", getExecutableName (),
+				selected (selection, WARNING) ? "Warning: " : "");
+		vfprintf (errout, format, ap);
+		if (selected (selection, PERROR))
 #ifdef HAVE_STRERROR
-		fprintf (errout, " : %s", strerror (errno));
+			fprintf (errout, " : %s", strerror (errno));
 #else
-		perror (" ");
+			perror (" ");
 #endif
-	fputs ("\n", errout);
+		fputs ("\n", errout);
+	}
 	va_end (ap);
-	if (selected (selection, FATAL))
+	if (! Option.json && selected (selection, FATAL))
 		exit (1);
 }
 
