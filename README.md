@@ -5,35 +5,45 @@ simple ruby wrapper for exuberant-ctags
 ### usage
 
 ``` ruby
->> pp Ctags.tags_for_file('/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/timeout.rb')
-{"Timeout"=>
-  {:kind=>"module",
-   :pattern=>"module Timeout",
-   :language=>"Ruby",
-   :line=>30,
-   :filename=>
-    "/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/timeout.rb"},
- "ExitException"=>
-  {:class=>"Timeout",
-   :kind=>"class",
-   :pattern=>"  class ExitException < ::Exception # :nodoc:",
-   :language=>"Ruby",
-   :line=>37,
-   :filename=>
-    "/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/timeout.rb"},
- "Error"=>
-  {:class=>"Timeout",
-   :kind=>"class",
-   :pattern=>"  class Error < Interrupt",
-   :language=>"Ruby",
-   :line=>35,
-   :filename=>
-    "/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/timeout.rb"},
- "timeout"=>
-  {:kind=>"method",
-   :pattern=>"def timeout(n, e = nil, &block) # :nodoc:",
-   :language=>"Ruby",
-   :line=>100,
-   :filename=>
-    "/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/timeout.rb"}}
+>> pp Ctags.tags_for_file('/usr/lib/ruby/1.8/timeout.rb')
+[
+ {:path=>
+   "/usr/lib/ruby/1.8/timeout.rb",
+  :kind=>"module",
+  :language=>"Ruby",
+  :pattern=>"module Timeout",
+  :name=>"Timeout",
+  :line=>30},
+ {:path=>
+   "/usr/lib/ruby/1.8/timeout.rb",
+  :kind=>"class",
+  :class=>"Timeout",
+  :language=>"Ruby",
+  :pattern=>"class Error < Interrupt",
+  :name=>"Error",
+  :line=>35},
+ {:path=>
+   "/usr/lib/ruby/1.8/timeout.rb",
+  :kind=>"class",
+  :class=>"Timeout",
+  :language=>"Ruby",
+  :pattern=>"class ExitException < ::Exception # :nodoc:",
+  :name=>"ExitException",
+  :line=>37},
+ {:path=>
+   "/usr/lib/ruby/1.8/timeout.rb",
+  :kind=>"method",
+  :class=>"Timeout",
+  :language=>"Ruby",
+  :pattern=>"def timeout(sec, klass = nil)",
+  :name=>"timeout",
+  :line=>52},
+ {:path=>
+   "/usr/lib/ruby/1.8/timeout.rb",
+  :kind=>"method",
+  :language=>"Ruby",
+  :pattern=>"def timeout(n, e = nil, &block) # :nodoc:",
+  :name=>"timeout",
+  :line=>100}
+]
 ```

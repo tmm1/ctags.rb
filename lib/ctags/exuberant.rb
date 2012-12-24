@@ -61,6 +61,7 @@ module Ctags
         elsif obj[:error]
           warnings << obj
         elsif obj[:_type] == 'tag'
+          obj.delete :_type
           obj[:pattern].strip!
           tags << obj
         elsif obj[:completed]
