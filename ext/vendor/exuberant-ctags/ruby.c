@@ -134,11 +134,26 @@ static void emitRubyTag (vString* name, rubyKind kind)
 {
 	tagEntryInfo tag;
 	vString* scope;
+	const char *this_name;
 
 	vStringTerminate (name);
 	scope = stringListToScope (nesting);
 
-	initTagEntry (&tag, vStringValue (name));
+	/* extract scope and actual name from tag name in case of tags like
+	 * "class Foo::Bar::Baz" which are parsed as a single name, "Foo.Bar.Baz" */
+	this_name = strrchr (vStringValue (name), '.');
+	if (this_name)
+	{
+		if (vStringLength (scope) > 0)
+			vStringPut (scope, '.');
+		vStringNCat (scope, name, this_name - vStringValue (name));
+		vStringTerminate (scope);
+		this_name ++;
+	}
+	else
+		this_name = vStringValue (name);
+
+	initTagEntry (&tag, this_name);
 	if (vStringLength (scope) > 0) {
 	    tag.extensionFields.scope [0] = "class";
 	    tag.extensionFields.scope [1] = vStringValue (scope);
@@ -232,7 +247,26 @@ static void readAndEmitTag (const unsigned char** cp, rubyKind expected_kind)
 	if (isspace (**cp))
 	{
 		vString *name = vStringNew ();
-		rubyKind actual_kind = parseIdentifier (cp, name, expected_kind);
+		vString *chunk = vStringNew ();
+		rubyKind actual_kind;
+		unsigned int i = 0;
+
+		/* parse the identifier, allowing scoping like "class Foo::Bar::Baz" */
+		while (1)
+		{
+			actual_kind = parseIdentifier (cp, chunk, expected_kind);
+			if (i++ > 0)
+				vStringPut (name, '.');
+			vStringCat (name, chunk);
+			vStringClear (chunk);
+
+			if (actual_kind != K_UNDEFINED && (*cp)[0] == ':' && (*cp)[1] == ':')
+				*cp += 2;
+			else
+				break;
+		}
+		vStringDelete (chunk);
+		vStringTerminate (name);
 
 		if (actual_kind == K_UNDEFINED || vStringLength (name) == 0)
 		{
