@@ -9,11 +9,13 @@ module Ctags
   module Exuberant
     include POSIX::Spawn
 
-    BIN = File.expand_path("../../../ext/dst/bin/ctags", __FILE__)
+    BIN    = File.expand_path("../../../ext/dst/bin/ctags", __FILE__)
+    CONFIG = File.expand_path("../../ctags.cnf", __FILE__)
 
     def start
       args = [
         '--options=NONE',
+        "--options=#{CONFIG}",
         '--fields=+KlnzsStimfa',
         '--sort=no',
         '--json'
