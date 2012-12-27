@@ -195,7 +195,7 @@ static rubyKind parseIdentifier (
 	 * point or equals sign. These are all part of the name.
 	 * A method name may also contain a period if it's a singleton method.
 	 */
-	const char* also_ok = (kind == K_METHOD) ? "_.?!=" : "_";
+	const char* also_ok = (kind == K_METHOD || kind == K_SINGLETON) ? "_.?!=" : "_";
 
 	skipWhitespace (cp);
 
