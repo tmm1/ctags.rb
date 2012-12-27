@@ -431,6 +431,7 @@ static void findRubyTags (void)
 				do {
 					++cp;
 				} while (*cp != 0 && *cp != '"');
+				if (*cp == '"') ++cp;
 			}
 			else if (*cp == ';')
 			{
