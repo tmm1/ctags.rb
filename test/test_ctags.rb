@@ -13,8 +13,8 @@ class CtagsTest < Test::Unit::TestCase
     assert_equal 'method',    tag[:kind]
   end
 
-  def test_tags_for_code
-    tags = Ctags.tags_for_code('file.rb', File.read(__FILE__))
+  def test_tags_for_file_with_code
+    tags = Ctags.tags_for_file('file.rb', File.read(__FILE__))
     tag = tags.find{ |t| t[:name] == __method__.to_s }
 
     assert_equal 'file.rb',   tag[:path]

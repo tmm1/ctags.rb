@@ -3,11 +3,9 @@ require 'yajl'
 require 'tempfile'
 
 module Ctags
-  class Error < StandardError
-  end
-
   module Exuberant
     include POSIX::Spawn
+    extend self
 
     BIN    = File.expand_path("../../../ext/dst/bin/ctags", __FILE__)
     CONFIG = File.expand_path("../../ctags.cnf", __FILE__)
@@ -80,78 +78,10 @@ module Ctags
       tags
     end
 
-    def tags_for_code(filename, code)
-      tags_for_file(filename, code)
-    end
-
     def tags_for_file(filename, code=nil)
       cmd = {'command'=>'generate-tags','filename'=>filename}
       cmd['size'] = code.bytesize if code
       execute(cmd, code)
-    end
-
-    def tags_for_file_old(filename, code=nil)
-      args = [
-        '--options=NONE',
-        '--fields=+KlnzsStimfa',
-        '--sort=no',
-        '--excmd=pattern',
-        '-o', '-'
-      ]
-
-      child =
-        if code
-          # XXX stdin is not seekable
-          # args << "--stdin-filename=#{filename}"
-          # args << {:input => code}
-
-          tempfile = Tempfile.new(['ctags-input', File.extname(filename)])
-          tempfile.write(code)
-          tempfile.close
-          args << tempfile.path
-
-          begin
-            Child.new(BIN, *args)
-          ensure
-            tempfile.unlink
-          end
-        else
-          args << filename
-          Child.new(BIN, *args)
-        end
-
-      if !child.status.success?
-        raise Error, child.err
-      end
-
-      tags = []
-
-      child.out.each_line.map do |line|
-        name, path, rest = line.strip.split("\t", 3)
-        pattern, fields = rest.split("/;\"\t", 2)
-
-        tag = {
-          :name => name,
-          :path => code ? filename : path,
-          :pattern => pattern.sub('/^','').chomp('$').gsub('\\\\','\\')
-        }
-
-        fields.split("\t").each do |field|
-          if field == 'file:'
-            key, value = :scope, 'file'
-          else
-            key, value = field.split(":", 2)
-          end
-
-          tag[key.to_sym] = value
-        end
-
-        tag[:line] = tag[:line].to_i
-
-        tags << tag
-      end
-
-      tags
     end
   end
 end
