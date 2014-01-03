@@ -28,7 +28,7 @@
 *   DATA DECLARATIONS
 */
 typedef enum {
-	K_UNDEFINED = -1, K_CLASS, K_METHOD, K_MODULE, K_SINGLETON
+	K_UNDEFINED = -1, K_CLASS, K_METHOD, K_MODULE, K_SINGLETON, K_CONSTANT
 } rubyKind;
 
 /*
@@ -38,7 +38,8 @@ static kindOption RubyKinds [] = {
 	{ TRUE, 'c', "class",  "classes" },
 	{ TRUE, 'f', "method", "methods" },
 	{ TRUE, 'm', "module", "modules" },
-	{ TRUE, 'F', "singleton method", "singleton methods" }
+	{ TRUE, 'F', "singleton method", "singleton methods" },
+	{ TRUE, 'C', "constant", "constants" },
 };
 
 static stringList* nesting = 0;
@@ -162,7 +163,8 @@ static void emitRubyTag (vString* name, rubyKind kind)
 	tag.kind = RubyKinds [kind].letter;
 	makeTagEntry (&tag);
 
-	stringListAdd (nesting, vStringNewCopy (name));
+	if (kind != K_CONSTANT)
+		stringListAdd (nesting, vStringNewCopy (name));
 
 	vStringClear (name);
 	vStringDelete (scope);
@@ -242,6 +244,11 @@ static rubyKind parseIdentifier (
 	return kind;
 }
 
+static void enterUnnamedScope (void)
+{
+	stringListAdd (nesting, vStringNewInit (""));
+}
+
 static void readAndEmitTag (const unsigned char** cp, rubyKind expected_kind)
 {
 	if (isspace (**cp))
@@ -289,6 +296,7 @@ static void readAndEmitTag (const unsigned char** cp, rubyKind expected_kind)
 			*
 			* For now, we don't create any.
 			*/
+			enterUnnamedScope ();
 		}
 		else
 		{
@@ -296,11 +304,6 @@ static void readAndEmitTag (const unsigned char** cp, rubyKind expected_kind)
 		}
 		vStringDelete (name);
 	}
-}
-
-static void enterUnnamedScope (void)
-{
-	stringListAdd (nesting, vStringNewInit (""));
 }
 
 static void findRubyTags (void)
@@ -344,7 +347,7 @@ static void findRubyTags (void)
 		*
 		*   return if <exp>
 		*
-		* FIXME: this is fooled by code such as
+		* FIXME: this is fooled by code such as (see inlineIfDefinition below)
 		*
 		*   result = if <exp>
 		*               <a>
@@ -449,6 +452,27 @@ static void findRubyTags (void)
 	stringListDelete (nesting);
 }
 
+static void constantDefinition (const char *line, const regexMatch *matches, unsigned int count)
+{
+	if (count > 2)    /* should always be true per regex */
+	{
+		vString *const name = vStringNew ();
+		vStringNCopyS (name, line + matches [2].start, matches [2].length);
+		emitRubyTag (name, K_CONSTANT);
+	}
+}
+
+static void inlineIfDefinition (const char *line, const regexMatch *matches, unsigned int count)
+{
+	enterUnnamedScope ();
+}
+
+static void installRuby (const langType language)
+{
+	addCallbackRegex (language, "(^|[:;])[ \t]*([A-Z][[:alnum:]_]+) *=", NULL, constantDefinition);
+	addCallbackRegex (language, "= *(if|case|unless)", NULL, inlineIfDefinition);
+}
+
 extern parserDefinition* RubyParser (void)
 {
 	static const char *const extensions [] = { "rb", "ruby", NULL };
@@ -457,6 +481,7 @@ extern parserDefinition* RubyParser (void)
 	def->kindCount  = KIND_COUNT (RubyKinds);
 	def->extensions = extensions;
 	def->parser     = findRubyTags;
+	def->initialize = installRuby;
 	return def;
 }
 
