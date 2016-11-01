@@ -1,8 +1,8 @@
-require 'test/unit'
+require 'minitest/autorun'
 $:.unshift File.expand_path('../../lib', __FILE__)
 require 'ctags'
 
-class CtagsTest < Test::Unit::TestCase
+class CtagsTest < MiniTest::Test
   def test_tags_for_file
     tags = Ctags.tags_for_file(__FILE__)
     tag = tags.find{ |t| t[:name] == __method__.to_s }
