@@ -15,8 +15,7 @@ module Ctags
         '--options=NONE',
         "--options=#{CONFIG}",
         '--fields=+KlnzsStimfa',
-        '--sort=no',
-        '--json'
+        '--interactive'
       ]
 
       @pid, @in, @out, @err = popen4(BIN, *args)
