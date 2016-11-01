@@ -17,7 +17,6 @@ xsystem('pwd') # to create mkmf.log before the chdir
 
 Dir.chdir("#{CWD}/vendor/jansson-2.9") do
   sys "./configure --prefix=#{CWD}/dst --disable-shared" unless File.exists?('config.h')
-  sys "touch *"
   sys "make install"
 end
 
@@ -25,12 +24,7 @@ ENV['CFLAGS']  = "-ggdb -I#{CWD}/dst/include"
 ENV['LDFLAGS'] = "-L#{CWD}/dst/lib"
 ENV['LIBS']    = "-ljansson"
 
-if !have_func('fmemopen','stdio.h') && have_func('funopen','stdio.h')
-  ENV['CFLAGS'] += " -DHAVE_FMEMOPEN_C"
-  FileUtils.cp "#{CWD}/vendor/fmemopen/fmemopen.c", "#{CWD}/dst/include"
-end
-
-Dir.chdir("#{CWD}/vendor/exuberant-ctags") do
+Dir.chdir("#{CWD}/vendor/ctags") do
   sys "./configure --prefix=#{CWD}/dst" unless File.exists?('config.h')
   sys "make install"
 end

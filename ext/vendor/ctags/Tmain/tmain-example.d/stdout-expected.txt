@@ -1,0 +1,4 @@
+c  classes
+f  methods
+m  modules
+F  singleton methods

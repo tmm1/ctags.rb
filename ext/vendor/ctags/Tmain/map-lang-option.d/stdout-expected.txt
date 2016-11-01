@@ -1,0 +1,5 @@
+Automake Makefile.am
+HTML     *.htm *.html
+Make     *.mak *.mk [Mm]akefile GNUmakefile
+Ruby     *.rb *.ruby
+foo      *.rb *.html *.ppp [Mm]akefile GNUmakefile RUN.TTT

@@ -1,0 +1,2 @@
+Input	input.ml	1;"	M
+valueStr	input.ml	/^let valueStr = "(*)(*)"$/;"	v
