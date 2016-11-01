@@ -15,7 +15,7 @@ CWD = File.expand_path('../', __FILE__)
 FileUtils.mkdir_p "#{CWD}/dst"
 xsystem('pwd') # to create mkmf.log before the chdir
 
-Dir.chdir("#{CWD}/vendor/jansson-2.5") do
+Dir.chdir("#{CWD}/vendor/jansson-2.9") do
   sys "./configure --prefix=#{CWD}/dst --disable-shared" unless File.exists?('config.h')
   sys "touch *"
   sys "make install"
