@@ -27,6 +27,7 @@ ENV['LIBS']    = "-ljansson"
 
 Dir.chdir("#{CWD}/vendor/ctags") do
   sys "./configure --prefix=#{CWD}/dst" unless File.exists?('config.h')
+  sys "touch configure aclocal.m4 Makefile.am Makefile.in"
   sys "make install"
 end
 
