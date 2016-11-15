@@ -3,7 +3,7 @@ require 'yajl'
 require 'tempfile'
 
 module Ctags
-  module Exuberant
+  module Universal
     include POSIX::Spawn
     extend self
 

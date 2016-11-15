@@ -1,5 +1,5 @@
 require 'ctags/version'
-require 'ctags/exuberant'
+require 'ctags/universal'
 require 'ctags/ruby'
 
 module Ctags
@@ -12,7 +12,7 @@ module Ctags
     if file =~ /\.rb$/
       Ruby.tags_for_file(file, code)
     else
-      Exuberant.tags_for_file(file, code)
+      Universal.tags_for_file(file, code)
     end
   end
 end
