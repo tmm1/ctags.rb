@@ -135,6 +135,9 @@ EXTRA_DIST += misc/units \
     Tmain/list-kinds-full.d/stdout-expected.txt\
     Tmain/list-language-fields.d/run.sh\
     Tmain/list-language-fields.d/stdout-expected.txt\
+    Tmain/list-params.d/run.sh\
+    Tmain/list-params.d/stderr-expected.txt\
+    Tmain/list-params.d/stdout-expected.txt\
     Tmain/list-pseudo-tags.d/exit-expected.txt\
     Tmain/list-pseudo-tags.d/run.sh\
     Tmain/list-pseudo-tags.d/stderr-expected.txt\
@@ -654,8 +657,12 @@ EXTRA_DIST += misc/units \
     Units/parser-c.r/end-field-of-macro.d/args.ctags\
     Units/parser-c.r/end-field-of-macro.d/expected.tags\
     Units/parser-c.r/end-field-of-macro.d/input.c\
+    Units/parser-c.r/enum.c.d/args.ctags\
     Units/parser-c.r/enum.c.d/expected.tags\
     Units/parser-c.r/enum.c.d/input.c\
+    Units/parser-c.r/if0.c.d/args.ctags\
+    Units/parser-c.r/if0.c.d/expected.tags\
+    Units/parser-c.r/if0.c.d/input.c\
     Units/parser-c.r/line_directives.c.d/README\
     Units/parser-c.r/line_directives.c.d/args.ctags\
     Units/parser-c.r/line_directives.c.d/expected.tags\
@@ -679,6 +686,16 @@ EXTRA_DIST += misc/units \
     Units/parser-c.r/using-cxx-keyword-in-c-code.d/args.ctags\
     Units/parser-c.r/using-cxx-keyword-in-c-code.d/expected.tags\
     Units/parser-c.r/using-cxx-keyword-in-c-code.d/input.c\
+    Units/parser-cpreprocessor.r/if0-false-with-param.c.d/args.ctags\
+    Units/parser-cpreprocessor.r/if0-false-with-param.c.d/expected.tags\
+    Units/parser-cpreprocessor.r/if0-false-with-param.c.d/input.c\
+    Units/parser-cpreprocessor.r/if0-true-with-param.c.d/args.ctags\
+    Units/parser-cpreprocessor.r/if0-true-with-param.c.d/expected.tags\
+    Units/parser-cpreprocessor.r/if0-true-with-param.c.d/input.c\
+    Units/parser-cpreprocessor.r/macros-specified-with-param.c.d/README\
+    Units/parser-cpreprocessor.r/macros-specified-with-param.c.d/args.ctags\
+    Units/parser-cpreprocessor.r/macros-specified-with-param.c.d/expected.tags\
+    Units/parser-cpreprocessor.r/macros-specified-with-param.c.d/input.c\
     Units/parser-cpreprocessor.r/simple-cpreprocessor.d/args.ctags\
     Units/parser-cpreprocessor.r/simple-cpreprocessor.d/expected.tags\
     Units/parser-cpreprocessor.r/simple-cpreprocessor.d/input.c\
@@ -817,6 +834,7 @@ EXTRA_DIST += misc/units \
     Units/parser-cxx.r/cxx11-override.d/input.cpp\
     Units/parser-cxx.r/cxx11-raw-strings.d/expected.tags\
     Units/parser-cxx.r/cxx11-raw-strings.d/input.cpp\
+    Units/parser-cxx.r/cxx11enum.cpp.d/args.ctags\
     Units/parser-cxx.r/cxx11enum.cpp.d/expected.tags\
     Units/parser-cxx.r/cxx11enum.cpp.d/input.cpp\
     Units/parser-cxx.r/cxx14-combined.d/args.ctags\
@@ -1711,6 +1729,10 @@ EXTRA_DIST += misc/units \
     Units/parser-yacc.r/nested.d/args.ctags\
     Units/parser-yacc.r/nested.d/expected.tags\
     Units/parser-yacc.r/nested.d/input.y\
+    Units/parser-yacc.r/not-union.d/README\
+    Units/parser-yacc.r/not-union.d/args.ctags\
+    Units/parser-yacc.r/not-union.d/expected.tags\
+    Units/parser-yacc.r/not-union.d/input.y\
     Units/parser-yaml.r/yaml-anchor.d/args.ctags\
     Units/parser-yaml.r/yaml-anchor.d/expected.tags\
     Units/parser-yaml.r/yaml-anchor.d/features\

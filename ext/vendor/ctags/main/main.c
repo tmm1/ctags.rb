@@ -71,9 +71,9 @@
 #include "keyword.h"
 #include "main.h"
 #include "options.h"
-#include "output.h"
 #include "read.h"
 #include "routines.h"
+#include "writer.h"
 
 #ifdef HAVE_JANSSON
 #include "interactive.h"
@@ -115,7 +115,7 @@ extern bool isDestinationStdout (void)
 {
 	bool toStdout = false;
 
-	if (outpuFormatUsedStdoutByDefault() ||  Option.filter  ||  Option.interactive ||
+	if (outputFormatUsedStdoutByDefault() ||  Option.filter  ||  Option.interactive ||
 		(Option.tagFileName != NULL  &&  (strcmp (Option.tagFileName, "-") == 0
 						  || strcmp (Option.tagFileName, "/dev/stdout") == 0
 		)))
@@ -539,6 +539,7 @@ void interactiveLoop (cookedArgs *args, void *user CTAGS_ATTR_UNUSED)
 
       flushTagFile ();
       fprintf (stdout, "{\"completed\": \"generate-tags\"}\n");
+      fflush(stdout);
     } else {
       error (FATAL, "unknown command name");
       goto next;
@@ -613,7 +614,7 @@ extern int main (int argc CTAGS_ATTR_UNUSED, char **argv)
 
 	setErrorPrinter (stderrDefaultErrorPrinter, NULL);
 	setMainLoop (batchMakeTags, NULL);
-	setTagWriter (&ctagsWriter);
+	setTagWriter (WRITER_CTAGS);
 
 	setCurrentDirectory ();
 	setExecutableName (*argv++);

@@ -124,35 +124,36 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dist_ctags_SOURCES_DIST = main/args.h main/ctags.h \
 	main/dependency.h main/entry.h main/error.h main/field.h \
 	main/flags.h main/fmt.h main/gcc-attr.h main/general.h \
-	main/htable.h main/keyword.h main/kind.h main/lcpp.h \
-	main/main.h main/mbcs.h main/nestlevel.h main/objpool.h \
-	main/options.h main/output.h main/parse.h main/parsers.h \
-	main/pcoproc.h main/promise.h main/ptag.h main/ptrarray.h \
-	main/read.h main/routines.h main/selectors.h main/sort.h \
-	main/strlist.h main/types.h main/vstring.h main/xtag.h \
+	main/htable.h main/keyword.h main/kind.h main/main.h \
+	main/mbcs.h main/nestlevel.h main/objpool.h main/options.h \
+	main/param.h main/parse.h main/parsers.h main/pcoproc.h \
+	main/promise.h main/ptag.h main/ptrarray.h main/read.h \
+	main/routines.h main/selectors.h main/sort.h main/strlist.h \
+	main/types.h main/vstring.h main/writer.h main/xtag.h \
 	main/mio.h fnmatch/fnmatch.h gnu_regex/regex.h \
 	parsers/cxx/cxx_debug.h parsers/cxx/cxx_keyword.h \
 	parsers/cxx/cxx_parser_internal.h parsers/cxx/cxx_parser.h \
 	parsers/cxx/cxx_scope.h parsers/cxx/cxx_tag.h \
 	parsers/cxx/cxx_token.h parsers/cxx/cxx_token_chain.h \
 	parsers/meta-iniconf.h parsers/meta-m4.h parsers/meta-make.h \
-	main/debug.h main/args.c main/dependency.c main/entry.c \
-	main/error.c main/field.c main/flags.c main/fmt.c \
-	main/htable.c main/keyword.c main/kind.c main/lcpp.c \
-	main/lregex.c main/lxcmd.c main/lxpath.c main/main.c \
-	main/mbcs.c main/nestlevel.c main/objpool.c main/options.c \
-	main/output-etags.c main/output-ctags.c main/output-json.c \
-	main/output-xref.c main/parse.c main/pcoproc.c main/promise.c \
-	main/ptag.c main/ptrarray.c main/read.c main/routines.c \
-	main/selectors.c main/sort.c main/strlist.c main/vstring.c \
+	parsers/meta-cpreprocessor.h main/debug.h main/args.c \
+	main/dependency.c main/entry.c main/error.c main/field.c \
+	main/flags.c main/fmt.c main/htable.c main/keyword.c \
+	main/kind.c main/lregex.c main/lxcmd.c main/lxpath.c \
+	main/main.c main/mbcs.c main/nestlevel.c main/objpool.c \
+	main/options.c main/param.c main/parse.c main/pcoproc.c \
+	main/promise.c main/ptag.c main/ptrarray.c main/read.c \
+	main/routines.c main/selectors.c main/sort.c main/strlist.c \
+	main/vstring.c main/writer.c main/writer-etags.c \
+	main/writer-ctags.c main/writer-json.c main/writer-xref.c \
 	main/xtag.c main/repoinfo.c main/mio.c fnmatch/fnmatch.c \
 	gnu_regex/regex.c parsers/ada.c parsers/ant.c parsers/asm.c \
 	parsers/asp.c parsers/autoconf.c parsers/automake.c \
 	parsers/awk.c parsers/basic.c parsers/beta.c parsers/c.c \
 	parsers/clojure.c parsers/css.c parsers/cobol.c \
-	parsers/cxx/cxx.c parsers/cxx/cxx_debug.c \
-	parsers/cxx/cxx_keyword.c parsers/cxx/cxx_parser.c \
-	parsers/cxx/cxx_parser_block.c \
+	parsers/cpreprocessor.c parsers/cxx/cxx.c \
+	parsers/cxx/cxx_debug.c parsers/cxx/cxx_keyword.c \
+	parsers/cxx/cxx_parser.c parsers/cxx/cxx_parser_block.c \
 	parsers/cxx/cxx_parser_function.c \
 	parsers/cxx/cxx_parser_lambda.c \
 	parsers/cxx/cxx_parser_namespace.c \
@@ -202,22 +203,23 @@ am__objects_14 = main/ctags-args.$(OBJEXT) \
 	main/ctags-error.$(OBJEXT) main/ctags-field.$(OBJEXT) \
 	main/ctags-flags.$(OBJEXT) main/ctags-fmt.$(OBJEXT) \
 	main/ctags-htable.$(OBJEXT) main/ctags-keyword.$(OBJEXT) \
-	main/ctags-kind.$(OBJEXT) main/ctags-lcpp.$(OBJEXT) \
-	main/ctags-lregex.$(OBJEXT) main/ctags-lxcmd.$(OBJEXT) \
-	main/ctags-lxpath.$(OBJEXT) main/ctags-main.$(OBJEXT) \
-	main/ctags-mbcs.$(OBJEXT) main/ctags-nestlevel.$(OBJEXT) \
-	main/ctags-objpool.$(OBJEXT) main/ctags-options.$(OBJEXT) \
-	main/ctags-output-etags.$(OBJEXT) \
-	main/ctags-output-ctags.$(OBJEXT) \
-	main/ctags-output-json.$(OBJEXT) \
-	main/ctags-output-xref.$(OBJEXT) main/ctags-parse.$(OBJEXT) \
-	main/ctags-pcoproc.$(OBJEXT) main/ctags-promise.$(OBJEXT) \
-	main/ctags-ptag.$(OBJEXT) main/ctags-ptrarray.$(OBJEXT) \
-	main/ctags-read.$(OBJEXT) main/ctags-routines.$(OBJEXT) \
-	main/ctags-selectors.$(OBJEXT) main/ctags-sort.$(OBJEXT) \
-	main/ctags-strlist.$(OBJEXT) main/ctags-vstring.$(OBJEXT) \
-	main/ctags-xtag.$(OBJEXT) $(am__objects_8) $(am__objects_9) \
-	$(am__objects_11) $(am__objects_13) $(am__objects_1)
+	main/ctags-kind.$(OBJEXT) main/ctags-lregex.$(OBJEXT) \
+	main/ctags-lxcmd.$(OBJEXT) main/ctags-lxpath.$(OBJEXT) \
+	main/ctags-main.$(OBJEXT) main/ctags-mbcs.$(OBJEXT) \
+	main/ctags-nestlevel.$(OBJEXT) main/ctags-objpool.$(OBJEXT) \
+	main/ctags-options.$(OBJEXT) main/ctags-param.$(OBJEXT) \
+	main/ctags-parse.$(OBJEXT) main/ctags-pcoproc.$(OBJEXT) \
+	main/ctags-promise.$(OBJEXT) main/ctags-ptag.$(OBJEXT) \
+	main/ctags-ptrarray.$(OBJEXT) main/ctags-read.$(OBJEXT) \
+	main/ctags-routines.$(OBJEXT) main/ctags-selectors.$(OBJEXT) \
+	main/ctags-sort.$(OBJEXT) main/ctags-strlist.$(OBJEXT) \
+	main/ctags-vstring.$(OBJEXT) main/ctags-writer.$(OBJEXT) \
+	main/ctags-writer-etags.$(OBJEXT) \
+	main/ctags-writer-ctags.$(OBJEXT) \
+	main/ctags-writer-json.$(OBJEXT) \
+	main/ctags-writer-xref.$(OBJEXT) main/ctags-xtag.$(OBJEXT) \
+	$(am__objects_8) $(am__objects_9) $(am__objects_11) \
+	$(am__objects_13) $(am__objects_1)
 am__objects_15 = optlib/ctags-CoffeeScript.$(OBJEXT) \
 	optlib/ctags-ctags-optlib.$(OBJEXT) \
 	optlib/ctags-gdbinit.$(OBJEXT) optlib/ctags-man.$(OBJEXT) \
@@ -239,6 +241,7 @@ am__objects_21 = parsers/ctags-ada.$(OBJEXT) \
 	parsers/ctags-basic.$(OBJEXT) parsers/ctags-beta.$(OBJEXT) \
 	parsers/ctags-c.$(OBJEXT) parsers/ctags-clojure.$(OBJEXT) \
 	parsers/ctags-css.$(OBJEXT) parsers/ctags-cobol.$(OBJEXT) \
+	parsers/ctags-cpreprocessor.$(OBJEXT) \
 	parsers/cxx/ctags-cxx.$(OBJEXT) \
 	parsers/cxx/ctags-cxx_debug.$(OBJEXT) \
 	parsers/cxx/ctags-cxx_keyword.$(OBJEXT) \
@@ -565,24 +568,24 @@ MIO_SRCS = main/mio.c
 MAIN_HEADS = main/args.h main/ctags.h main/dependency.h main/entry.h \
 	main/error.h main/field.h main/flags.h main/fmt.h \
 	main/gcc-attr.h main/general.h main/htable.h main/keyword.h \
-	main/kind.h main/lcpp.h main/main.h main/mbcs.h \
-	main/nestlevel.h main/objpool.h main/options.h main/output.h \
-	main/parse.h main/parsers.h main/pcoproc.h main/promise.h \
-	main/ptag.h main/ptrarray.h main/read.h main/routines.h \
-	main/selectors.h main/sort.h main/strlist.h main/types.h \
-	main/vstring.h main/xtag.h $(MIO_HEADS) $(am__append_3) \
+	main/kind.h main/main.h main/mbcs.h main/nestlevel.h \
+	main/objpool.h main/options.h main/param.h main/parse.h \
+	main/parsers.h main/pcoproc.h main/promise.h main/ptag.h \
+	main/ptrarray.h main/read.h main/routines.h main/selectors.h \
+	main/sort.h main/strlist.h main/types.h main/vstring.h \
+	main/writer.h main/xtag.h $(MIO_HEADS) $(am__append_3) \
 	$(am__append_5) $(am__append_9)
 MAIN_SRCS = main/args.c main/dependency.c main/entry.c main/error.c \
 	main/field.c main/flags.c main/fmt.c main/htable.c \
-	main/keyword.c main/kind.c main/lcpp.c main/lregex.c \
-	main/lxcmd.c main/lxpath.c main/main.c main/mbcs.c \
-	main/nestlevel.c main/objpool.c main/options.c \
-	main/output-etags.c main/output-ctags.c main/output-json.c \
-	main/output-xref.c main/parse.c main/pcoproc.c main/promise.c \
-	main/ptag.c main/ptrarray.c main/read.c main/routines.c \
-	main/selectors.c main/sort.c main/strlist.c main/vstring.c \
-	main/xtag.c $(REPOINFO_SRCS) $(MIO_SRCS) $(NULL) \
-	$(am__append_2) $(am__append_4) $(am__append_8)
+	main/keyword.c main/kind.c main/lregex.c main/lxcmd.c \
+	main/lxpath.c main/main.c main/mbcs.c main/nestlevel.c \
+	main/objpool.c main/options.c main/param.c main/parse.c \
+	main/pcoproc.c main/promise.c main/ptag.c main/ptrarray.c \
+	main/read.c main/routines.c main/selectors.c main/sort.c \
+	main/strlist.c main/vstring.c main/writer.c \
+	main/writer-etags.c main/writer-ctags.c main/writer-json.c \
+	main/writer-xref.c main/xtag.c $(REPOINFO_SRCS) $(MIO_SRCS) \
+	$(NULL) $(am__append_2) $(am__append_4) $(am__append_8)
 TRANSLATOR_INPUT = \
 	optlib/CoffeeScript.ctags		\
 	optlib/ctags-optlib.ctags		\
@@ -598,13 +601,15 @@ PARSER_HEADS = parsers/cxx/cxx_debug.h parsers/cxx/cxx_keyword.h \
 	parsers/cxx/cxx_scope.h parsers/cxx/cxx_tag.h \
 	parsers/cxx/cxx_token.h parsers/cxx/cxx_token_chain.h \
 	parsers/meta-iniconf.h parsers/meta-m4.h parsers/meta-make.h \
-	$(NULL) $(am__append_7) $(am__append_11)
+	parsers/meta-cpreprocessor.h $(NULL) $(am__append_7) \
+	$(am__append_11)
 PARSER_SRCS = parsers/ada.c parsers/ant.c parsers/asm.c parsers/asp.c \
 	parsers/autoconf.c parsers/automake.c parsers/awk.c \
 	parsers/basic.c parsers/beta.c parsers/c.c parsers/clojure.c \
-	parsers/css.c parsers/cobol.c parsers/cxx/cxx.c \
-	parsers/cxx/cxx_debug.c parsers/cxx/cxx_keyword.c \
-	parsers/cxx/cxx_parser.c parsers/cxx/cxx_parser_block.c \
+	parsers/css.c parsers/cobol.c parsers/cpreprocessor.c \
+	parsers/cxx/cxx.c parsers/cxx/cxx_debug.c \
+	parsers/cxx/cxx_keyword.c parsers/cxx/cxx_parser.c \
+	parsers/cxx/cxx_parser_block.c \
 	parsers/cxx/cxx_parser_function.c \
 	parsers/cxx/cxx_parser_lambda.c \
 	parsers/cxx/cxx_parser_namespace.c \
@@ -821,6 +826,9 @@ EXTRA_DIST = $(NULL) misc/units \
 	Tmain/list-kinds-full.d/stdout-expected.txt \
 	Tmain/list-language-fields.d/run.sh \
 	Tmain/list-language-fields.d/stdout-expected.txt \
+	Tmain/list-params.d/run.sh \
+	Tmain/list-params.d/stderr-expected.txt \
+	Tmain/list-params.d/stdout-expected.txt \
 	Tmain/list-pseudo-tags.d/exit-expected.txt \
 	Tmain/list-pseudo-tags.d/run.sh \
 	Tmain/list-pseudo-tags.d/stderr-expected.txt \
@@ -1333,8 +1341,12 @@ EXTRA_DIST = $(NULL) misc/units \
 	Units/parser-c.r/end-field-of-macro.d/args.ctags \
 	Units/parser-c.r/end-field-of-macro.d/expected.tags \
 	Units/parser-c.r/end-field-of-macro.d/input.c \
+	Units/parser-c.r/enum.c.d/args.ctags \
 	Units/parser-c.r/enum.c.d/expected.tags \
 	Units/parser-c.r/enum.c.d/input.c \
+	Units/parser-c.r/if0.c.d/args.ctags \
+	Units/parser-c.r/if0.c.d/expected.tags \
+	Units/parser-c.r/if0.c.d/input.c \
 	Units/parser-c.r/line_directives.c.d/README \
 	Units/parser-c.r/line_directives.c.d/args.ctags \
 	Units/parser-c.r/line_directives.c.d/expected.tags \
@@ -1358,6 +1370,16 @@ EXTRA_DIST = $(NULL) misc/units \
 	Units/parser-c.r/using-cxx-keyword-in-c-code.d/args.ctags \
 	Units/parser-c.r/using-cxx-keyword-in-c-code.d/expected.tags \
 	Units/parser-c.r/using-cxx-keyword-in-c-code.d/input.c \
+	Units/parser-cpreprocessor.r/if0-false-with-param.c.d/args.ctags \
+	Units/parser-cpreprocessor.r/if0-false-with-param.c.d/expected.tags \
+	Units/parser-cpreprocessor.r/if0-false-with-param.c.d/input.c \
+	Units/parser-cpreprocessor.r/if0-true-with-param.c.d/args.ctags \
+	Units/parser-cpreprocessor.r/if0-true-with-param.c.d/expected.tags \
+	Units/parser-cpreprocessor.r/if0-true-with-param.c.d/input.c \
+	Units/parser-cpreprocessor.r/macros-specified-with-param.c.d/README \
+	Units/parser-cpreprocessor.r/macros-specified-with-param.c.d/args.ctags \
+	Units/parser-cpreprocessor.r/macros-specified-with-param.c.d/expected.tags \
+	Units/parser-cpreprocessor.r/macros-specified-with-param.c.d/input.c \
 	Units/parser-cpreprocessor.r/simple-cpreprocessor.d/args.ctags \
 	Units/parser-cpreprocessor.r/simple-cpreprocessor.d/expected.tags \
 	Units/parser-cpreprocessor.r/simple-cpreprocessor.d/input.c \
@@ -1496,6 +1518,7 @@ EXTRA_DIST = $(NULL) misc/units \
 	Units/parser-cxx.r/cxx11-override.d/input.cpp \
 	Units/parser-cxx.r/cxx11-raw-strings.d/expected.tags \
 	Units/parser-cxx.r/cxx11-raw-strings.d/input.cpp \
+	Units/parser-cxx.r/cxx11enum.cpp.d/args.ctags \
 	Units/parser-cxx.r/cxx11enum.cpp.d/expected.tags \
 	Units/parser-cxx.r/cxx11enum.cpp.d/input.cpp \
 	Units/parser-cxx.r/cxx14-combined.d/args.ctags \
@@ -2390,6 +2413,10 @@ EXTRA_DIST = $(NULL) misc/units \
 	Units/parser-yacc.r/nested.d/args.ctags \
 	Units/parser-yacc.r/nested.d/expected.tags \
 	Units/parser-yacc.r/nested.d/input.y \
+	Units/parser-yacc.r/not-union.d/README \
+	Units/parser-yacc.r/not-union.d/args.ctags \
+	Units/parser-yacc.r/not-union.d/expected.tags \
+	Units/parser-yacc.r/not-union.d/input.y \
 	Units/parser-yaml.r/yaml-anchor.d/args.ctags \
 	Units/parser-yaml.r/yaml-anchor.d/expected.tags \
 	Units/parser-yaml.r/yaml-anchor.d/features \
@@ -2898,8 +2925,6 @@ main/ctags-keyword.$(OBJEXT): main/$(am__dirstamp) \
 	main/$(DEPDIR)/$(am__dirstamp)
 main/ctags-kind.$(OBJEXT): main/$(am__dirstamp) \
 	main/$(DEPDIR)/$(am__dirstamp)
-main/ctags-lcpp.$(OBJEXT): main/$(am__dirstamp) \
-	main/$(DEPDIR)/$(am__dirstamp)
 main/ctags-lregex.$(OBJEXT): main/$(am__dirstamp) \
 	main/$(DEPDIR)/$(am__dirstamp)
 main/ctags-lxcmd.$(OBJEXT): main/$(am__dirstamp) \
@@ -2916,13 +2941,7 @@ main/ctags-objpool.$(OBJEXT): main/$(am__dirstamp) \
 	main/$(DEPDIR)/$(am__dirstamp)
 main/ctags-options.$(OBJEXT): main/$(am__dirstamp) \
 	main/$(DEPDIR)/$(am__dirstamp)
-main/ctags-output-etags.$(OBJEXT): main/$(am__dirstamp) \
-	main/$(DEPDIR)/$(am__dirstamp)
-main/ctags-output-ctags.$(OBJEXT): main/$(am__dirstamp) \
-	main/$(DEPDIR)/$(am__dirstamp)
-main/ctags-output-json.$(OBJEXT): main/$(am__dirstamp) \
-	main/$(DEPDIR)/$(am__dirstamp)
-main/ctags-output-xref.$(OBJEXT): main/$(am__dirstamp) \
+main/ctags-param.$(OBJEXT): main/$(am__dirstamp) \
 	main/$(DEPDIR)/$(am__dirstamp)
 main/ctags-parse.$(OBJEXT): main/$(am__dirstamp) \
 	main/$(DEPDIR)/$(am__dirstamp)
@@ -2945,6 +2964,16 @@ main/ctags-sort.$(OBJEXT): main/$(am__dirstamp) \
 main/ctags-strlist.$(OBJEXT): main/$(am__dirstamp) \
 	main/$(DEPDIR)/$(am__dirstamp)
 main/ctags-vstring.$(OBJEXT): main/$(am__dirstamp) \
+	main/$(DEPDIR)/$(am__dirstamp)
+main/ctags-writer.$(OBJEXT): main/$(am__dirstamp) \
+	main/$(DEPDIR)/$(am__dirstamp)
+main/ctags-writer-etags.$(OBJEXT): main/$(am__dirstamp) \
+	main/$(DEPDIR)/$(am__dirstamp)
+main/ctags-writer-ctags.$(OBJEXT): main/$(am__dirstamp) \
+	main/$(DEPDIR)/$(am__dirstamp)
+main/ctags-writer-json.$(OBJEXT): main/$(am__dirstamp) \
+	main/$(DEPDIR)/$(am__dirstamp)
+main/ctags-writer-xref.$(OBJEXT): main/$(am__dirstamp) \
 	main/$(DEPDIR)/$(am__dirstamp)
 main/ctags-xtag.$(OBJEXT): main/$(am__dirstamp) \
 	main/$(DEPDIR)/$(am__dirstamp)
@@ -2999,6 +3028,8 @@ parsers/ctags-clojure.$(OBJEXT): parsers/$(am__dirstamp) \
 parsers/ctags-css.$(OBJEXT): parsers/$(am__dirstamp) \
 	parsers/$(DEPDIR)/$(am__dirstamp)
 parsers/ctags-cobol.$(OBJEXT): parsers/$(am__dirstamp) \
+	parsers/$(DEPDIR)/$(am__dirstamp)
+parsers/ctags-cpreprocessor.$(OBJEXT): parsers/$(am__dirstamp) \
 	parsers/$(DEPDIR)/$(am__dirstamp)
 parsers/cxx/$(am__dirstamp):
 	@$(MKDIR_P) parsers/cxx
@@ -3281,7 +3312,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-htable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-keyword.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-kind.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-lcpp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-lregex.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-lxcmd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-lxpath.Po@am__quote@
@@ -3291,10 +3321,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-nestlevel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-objpool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-options.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-output-ctags.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-output-etags.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-output-json.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-output-xref.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-param.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-pcoproc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-promise.Po@am__quote@
@@ -3307,6 +3334,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-sort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-strlist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-vstring.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-writer-ctags.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-writer-etags.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-writer-json.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-writer-xref.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-writer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/ctags-xtag.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@main/$(DEPDIR)/readtags-mio.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@optlib/$(DEPDIR)/ctags-CoffeeScript.Po@am__quote@
@@ -3327,6 +3359,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@parsers/$(DEPDIR)/ctags-c.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@parsers/$(DEPDIR)/ctags-clojure.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@parsers/$(DEPDIR)/ctags-cobol.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@parsers/$(DEPDIR)/ctags-cpreprocessor.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@parsers/$(DEPDIR)/ctags-css.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@parsers/$(DEPDIR)/ctags-dbusintrospect.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@parsers/$(DEPDIR)/ctags-diff.Po@am__quote@
@@ -3562,20 +3595,6 @@ main/ctags-kind.obj: main/kind.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-kind.obj `if test -f 'main/kind.c'; then $(CYGPATH_W) 'main/kind.c'; else $(CYGPATH_W) '$(srcdir)/main/kind.c'; fi`
 
-main/ctags-lcpp.o: main/lcpp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-lcpp.o -MD -MP -MF main/$(DEPDIR)/ctags-lcpp.Tpo -c -o main/ctags-lcpp.o `test -f 'main/lcpp.c' || echo '$(srcdir)/'`main/lcpp.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-lcpp.Tpo main/$(DEPDIR)/ctags-lcpp.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/lcpp.c' object='main/ctags-lcpp.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-lcpp.o `test -f 'main/lcpp.c' || echo '$(srcdir)/'`main/lcpp.c
-
-main/ctags-lcpp.obj: main/lcpp.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-lcpp.obj -MD -MP -MF main/$(DEPDIR)/ctags-lcpp.Tpo -c -o main/ctags-lcpp.obj `if test -f 'main/lcpp.c'; then $(CYGPATH_W) 'main/lcpp.c'; else $(CYGPATH_W) '$(srcdir)/main/lcpp.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-lcpp.Tpo main/$(DEPDIR)/ctags-lcpp.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/lcpp.c' object='main/ctags-lcpp.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-lcpp.obj `if test -f 'main/lcpp.c'; then $(CYGPATH_W) 'main/lcpp.c'; else $(CYGPATH_W) '$(srcdir)/main/lcpp.c'; fi`
-
 main/ctags-lregex.o: main/lregex.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-lregex.o -MD -MP -MF main/$(DEPDIR)/ctags-lregex.Tpo -c -o main/ctags-lregex.o `test -f 'main/lregex.c' || echo '$(srcdir)/'`main/lregex.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-lregex.Tpo main/$(DEPDIR)/ctags-lregex.Po
@@ -3688,61 +3707,19 @@ main/ctags-options.obj: main/options.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-options.obj `if test -f 'main/options.c'; then $(CYGPATH_W) 'main/options.c'; else $(CYGPATH_W) '$(srcdir)/main/options.c'; fi`
 
-main/ctags-output-etags.o: main/output-etags.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-output-etags.o -MD -MP -MF main/$(DEPDIR)/ctags-output-etags.Tpo -c -o main/ctags-output-etags.o `test -f 'main/output-etags.c' || echo '$(srcdir)/'`main/output-etags.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-output-etags.Tpo main/$(DEPDIR)/ctags-output-etags.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/output-etags.c' object='main/ctags-output-etags.o' libtool=no @AMDEPBACKSLASH@
+main/ctags-param.o: main/param.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-param.o -MD -MP -MF main/$(DEPDIR)/ctags-param.Tpo -c -o main/ctags-param.o `test -f 'main/param.c' || echo '$(srcdir)/'`main/param.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-param.Tpo main/$(DEPDIR)/ctags-param.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/param.c' object='main/ctags-param.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-output-etags.o `test -f 'main/output-etags.c' || echo '$(srcdir)/'`main/output-etags.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-param.o `test -f 'main/param.c' || echo '$(srcdir)/'`main/param.c
 
-main/ctags-output-etags.obj: main/output-etags.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-output-etags.obj -MD -MP -MF main/$(DEPDIR)/ctags-output-etags.Tpo -c -o main/ctags-output-etags.obj `if test -f 'main/output-etags.c'; then $(CYGPATH_W) 'main/output-etags.c'; else $(CYGPATH_W) '$(srcdir)/main/output-etags.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-output-etags.Tpo main/$(DEPDIR)/ctags-output-etags.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/output-etags.c' object='main/ctags-output-etags.obj' libtool=no @AMDEPBACKSLASH@
+main/ctags-param.obj: main/param.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-param.obj -MD -MP -MF main/$(DEPDIR)/ctags-param.Tpo -c -o main/ctags-param.obj `if test -f 'main/param.c'; then $(CYGPATH_W) 'main/param.c'; else $(CYGPATH_W) '$(srcdir)/main/param.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-param.Tpo main/$(DEPDIR)/ctags-param.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/param.c' object='main/ctags-param.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-output-etags.obj `if test -f 'main/output-etags.c'; then $(CYGPATH_W) 'main/output-etags.c'; else $(CYGPATH_W) '$(srcdir)/main/output-etags.c'; fi`
-
-main/ctags-output-ctags.o: main/output-ctags.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-output-ctags.o -MD -MP -MF main/$(DEPDIR)/ctags-output-ctags.Tpo -c -o main/ctags-output-ctags.o `test -f 'main/output-ctags.c' || echo '$(srcdir)/'`main/output-ctags.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-output-ctags.Tpo main/$(DEPDIR)/ctags-output-ctags.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/output-ctags.c' object='main/ctags-output-ctags.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-output-ctags.o `test -f 'main/output-ctags.c' || echo '$(srcdir)/'`main/output-ctags.c
-
-main/ctags-output-ctags.obj: main/output-ctags.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-output-ctags.obj -MD -MP -MF main/$(DEPDIR)/ctags-output-ctags.Tpo -c -o main/ctags-output-ctags.obj `if test -f 'main/output-ctags.c'; then $(CYGPATH_W) 'main/output-ctags.c'; else $(CYGPATH_W) '$(srcdir)/main/output-ctags.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-output-ctags.Tpo main/$(DEPDIR)/ctags-output-ctags.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/output-ctags.c' object='main/ctags-output-ctags.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-output-ctags.obj `if test -f 'main/output-ctags.c'; then $(CYGPATH_W) 'main/output-ctags.c'; else $(CYGPATH_W) '$(srcdir)/main/output-ctags.c'; fi`
-
-main/ctags-output-json.o: main/output-json.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-output-json.o -MD -MP -MF main/$(DEPDIR)/ctags-output-json.Tpo -c -o main/ctags-output-json.o `test -f 'main/output-json.c' || echo '$(srcdir)/'`main/output-json.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-output-json.Tpo main/$(DEPDIR)/ctags-output-json.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/output-json.c' object='main/ctags-output-json.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-output-json.o `test -f 'main/output-json.c' || echo '$(srcdir)/'`main/output-json.c
-
-main/ctags-output-json.obj: main/output-json.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-output-json.obj -MD -MP -MF main/$(DEPDIR)/ctags-output-json.Tpo -c -o main/ctags-output-json.obj `if test -f 'main/output-json.c'; then $(CYGPATH_W) 'main/output-json.c'; else $(CYGPATH_W) '$(srcdir)/main/output-json.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-output-json.Tpo main/$(DEPDIR)/ctags-output-json.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/output-json.c' object='main/ctags-output-json.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-output-json.obj `if test -f 'main/output-json.c'; then $(CYGPATH_W) 'main/output-json.c'; else $(CYGPATH_W) '$(srcdir)/main/output-json.c'; fi`
-
-main/ctags-output-xref.o: main/output-xref.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-output-xref.o -MD -MP -MF main/$(DEPDIR)/ctags-output-xref.Tpo -c -o main/ctags-output-xref.o `test -f 'main/output-xref.c' || echo '$(srcdir)/'`main/output-xref.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-output-xref.Tpo main/$(DEPDIR)/ctags-output-xref.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/output-xref.c' object='main/ctags-output-xref.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-output-xref.o `test -f 'main/output-xref.c' || echo '$(srcdir)/'`main/output-xref.c
-
-main/ctags-output-xref.obj: main/output-xref.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-output-xref.obj -MD -MP -MF main/$(DEPDIR)/ctags-output-xref.Tpo -c -o main/ctags-output-xref.obj `if test -f 'main/output-xref.c'; then $(CYGPATH_W) 'main/output-xref.c'; else $(CYGPATH_W) '$(srcdir)/main/output-xref.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-output-xref.Tpo main/$(DEPDIR)/ctags-output-xref.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/output-xref.c' object='main/ctags-output-xref.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-output-xref.obj `if test -f 'main/output-xref.c'; then $(CYGPATH_W) 'main/output-xref.c'; else $(CYGPATH_W) '$(srcdir)/main/output-xref.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-param.obj `if test -f 'main/param.c'; then $(CYGPATH_W) 'main/param.c'; else $(CYGPATH_W) '$(srcdir)/main/param.c'; fi`
 
 main/ctags-parse.o: main/parse.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-parse.o -MD -MP -MF main/$(DEPDIR)/ctags-parse.Tpo -c -o main/ctags-parse.o `test -f 'main/parse.c' || echo '$(srcdir)/'`main/parse.c
@@ -3897,6 +3874,76 @@ main/ctags-vstring.obj: main/vstring.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/vstring.c' object='main/ctags-vstring.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-vstring.obj `if test -f 'main/vstring.c'; then $(CYGPATH_W) 'main/vstring.c'; else $(CYGPATH_W) '$(srcdir)/main/vstring.c'; fi`
+
+main/ctags-writer.o: main/writer.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-writer.o -MD -MP -MF main/$(DEPDIR)/ctags-writer.Tpo -c -o main/ctags-writer.o `test -f 'main/writer.c' || echo '$(srcdir)/'`main/writer.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-writer.Tpo main/$(DEPDIR)/ctags-writer.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/writer.c' object='main/ctags-writer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-writer.o `test -f 'main/writer.c' || echo '$(srcdir)/'`main/writer.c
+
+main/ctags-writer.obj: main/writer.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-writer.obj -MD -MP -MF main/$(DEPDIR)/ctags-writer.Tpo -c -o main/ctags-writer.obj `if test -f 'main/writer.c'; then $(CYGPATH_W) 'main/writer.c'; else $(CYGPATH_W) '$(srcdir)/main/writer.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-writer.Tpo main/$(DEPDIR)/ctags-writer.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/writer.c' object='main/ctags-writer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-writer.obj `if test -f 'main/writer.c'; then $(CYGPATH_W) 'main/writer.c'; else $(CYGPATH_W) '$(srcdir)/main/writer.c'; fi`
+
+main/ctags-writer-etags.o: main/writer-etags.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-writer-etags.o -MD -MP -MF main/$(DEPDIR)/ctags-writer-etags.Tpo -c -o main/ctags-writer-etags.o `test -f 'main/writer-etags.c' || echo '$(srcdir)/'`main/writer-etags.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-writer-etags.Tpo main/$(DEPDIR)/ctags-writer-etags.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/writer-etags.c' object='main/ctags-writer-etags.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-writer-etags.o `test -f 'main/writer-etags.c' || echo '$(srcdir)/'`main/writer-etags.c
+
+main/ctags-writer-etags.obj: main/writer-etags.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-writer-etags.obj -MD -MP -MF main/$(DEPDIR)/ctags-writer-etags.Tpo -c -o main/ctags-writer-etags.obj `if test -f 'main/writer-etags.c'; then $(CYGPATH_W) 'main/writer-etags.c'; else $(CYGPATH_W) '$(srcdir)/main/writer-etags.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-writer-etags.Tpo main/$(DEPDIR)/ctags-writer-etags.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/writer-etags.c' object='main/ctags-writer-etags.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-writer-etags.obj `if test -f 'main/writer-etags.c'; then $(CYGPATH_W) 'main/writer-etags.c'; else $(CYGPATH_W) '$(srcdir)/main/writer-etags.c'; fi`
+
+main/ctags-writer-ctags.o: main/writer-ctags.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-writer-ctags.o -MD -MP -MF main/$(DEPDIR)/ctags-writer-ctags.Tpo -c -o main/ctags-writer-ctags.o `test -f 'main/writer-ctags.c' || echo '$(srcdir)/'`main/writer-ctags.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-writer-ctags.Tpo main/$(DEPDIR)/ctags-writer-ctags.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/writer-ctags.c' object='main/ctags-writer-ctags.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-writer-ctags.o `test -f 'main/writer-ctags.c' || echo '$(srcdir)/'`main/writer-ctags.c
+
+main/ctags-writer-ctags.obj: main/writer-ctags.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-writer-ctags.obj -MD -MP -MF main/$(DEPDIR)/ctags-writer-ctags.Tpo -c -o main/ctags-writer-ctags.obj `if test -f 'main/writer-ctags.c'; then $(CYGPATH_W) 'main/writer-ctags.c'; else $(CYGPATH_W) '$(srcdir)/main/writer-ctags.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-writer-ctags.Tpo main/$(DEPDIR)/ctags-writer-ctags.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/writer-ctags.c' object='main/ctags-writer-ctags.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-writer-ctags.obj `if test -f 'main/writer-ctags.c'; then $(CYGPATH_W) 'main/writer-ctags.c'; else $(CYGPATH_W) '$(srcdir)/main/writer-ctags.c'; fi`
+
+main/ctags-writer-json.o: main/writer-json.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-writer-json.o -MD -MP -MF main/$(DEPDIR)/ctags-writer-json.Tpo -c -o main/ctags-writer-json.o `test -f 'main/writer-json.c' || echo '$(srcdir)/'`main/writer-json.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-writer-json.Tpo main/$(DEPDIR)/ctags-writer-json.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/writer-json.c' object='main/ctags-writer-json.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-writer-json.o `test -f 'main/writer-json.c' || echo '$(srcdir)/'`main/writer-json.c
+
+main/ctags-writer-json.obj: main/writer-json.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-writer-json.obj -MD -MP -MF main/$(DEPDIR)/ctags-writer-json.Tpo -c -o main/ctags-writer-json.obj `if test -f 'main/writer-json.c'; then $(CYGPATH_W) 'main/writer-json.c'; else $(CYGPATH_W) '$(srcdir)/main/writer-json.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-writer-json.Tpo main/$(DEPDIR)/ctags-writer-json.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/writer-json.c' object='main/ctags-writer-json.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-writer-json.obj `if test -f 'main/writer-json.c'; then $(CYGPATH_W) 'main/writer-json.c'; else $(CYGPATH_W) '$(srcdir)/main/writer-json.c'; fi`
+
+main/ctags-writer-xref.o: main/writer-xref.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-writer-xref.o -MD -MP -MF main/$(DEPDIR)/ctags-writer-xref.Tpo -c -o main/ctags-writer-xref.o `test -f 'main/writer-xref.c' || echo '$(srcdir)/'`main/writer-xref.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-writer-xref.Tpo main/$(DEPDIR)/ctags-writer-xref.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/writer-xref.c' object='main/ctags-writer-xref.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-writer-xref.o `test -f 'main/writer-xref.c' || echo '$(srcdir)/'`main/writer-xref.c
+
+main/ctags-writer-xref.obj: main/writer-xref.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-writer-xref.obj -MD -MP -MF main/$(DEPDIR)/ctags-writer-xref.Tpo -c -o main/ctags-writer-xref.obj `if test -f 'main/writer-xref.c'; then $(CYGPATH_W) 'main/writer-xref.c'; else $(CYGPATH_W) '$(srcdir)/main/writer-xref.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) main/$(DEPDIR)/ctags-writer-xref.Tpo main/$(DEPDIR)/ctags-writer-xref.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main/writer-xref.c' object='main/ctags-writer-xref.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o main/ctags-writer-xref.obj `if test -f 'main/writer-xref.c'; then $(CYGPATH_W) 'main/writer-xref.c'; else $(CYGPATH_W) '$(srcdir)/main/writer-xref.c'; fi`
 
 main/ctags-xtag.o: main/xtag.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT main/ctags-xtag.o -MD -MP -MF main/$(DEPDIR)/ctags-xtag.Tpo -c -o main/ctags-xtag.o `test -f 'main/xtag.c' || echo '$(srcdir)/'`main/xtag.c
@@ -4149,6 +4196,20 @@ parsers/ctags-cobol.obj: parsers/cobol.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parsers/cobol.c' object='parsers/ctags-cobol.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o parsers/ctags-cobol.obj `if test -f 'parsers/cobol.c'; then $(CYGPATH_W) 'parsers/cobol.c'; else $(CYGPATH_W) '$(srcdir)/parsers/cobol.c'; fi`
+
+parsers/ctags-cpreprocessor.o: parsers/cpreprocessor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT parsers/ctags-cpreprocessor.o -MD -MP -MF parsers/$(DEPDIR)/ctags-cpreprocessor.Tpo -c -o parsers/ctags-cpreprocessor.o `test -f 'parsers/cpreprocessor.c' || echo '$(srcdir)/'`parsers/cpreprocessor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) parsers/$(DEPDIR)/ctags-cpreprocessor.Tpo parsers/$(DEPDIR)/ctags-cpreprocessor.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parsers/cpreprocessor.c' object='parsers/ctags-cpreprocessor.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o parsers/ctags-cpreprocessor.o `test -f 'parsers/cpreprocessor.c' || echo '$(srcdir)/'`parsers/cpreprocessor.c
+
+parsers/ctags-cpreprocessor.obj: parsers/cpreprocessor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT parsers/ctags-cpreprocessor.obj -MD -MP -MF parsers/$(DEPDIR)/ctags-cpreprocessor.Tpo -c -o parsers/ctags-cpreprocessor.obj `if test -f 'parsers/cpreprocessor.c'; then $(CYGPATH_W) 'parsers/cpreprocessor.c'; else $(CYGPATH_W) '$(srcdir)/parsers/cpreprocessor.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) parsers/$(DEPDIR)/ctags-cpreprocessor.Tpo parsers/$(DEPDIR)/ctags-cpreprocessor.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parsers/cpreprocessor.c' object='parsers/ctags-cpreprocessor.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -c -o parsers/ctags-cpreprocessor.obj `if test -f 'parsers/cpreprocessor.c'; then $(CYGPATH_W) 'parsers/cpreprocessor.c'; else $(CYGPATH_W) '$(srcdir)/parsers/cpreprocessor.c'; fi`
 
 parsers/cxx/ctags-cxx.o: parsers/cxx/cxx.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ctags_CPPFLAGS) $(CPPFLAGS) $(ctags_CFLAGS) $(CFLAGS) -MT parsers/cxx/ctags-cxx.o -MD -MP -MF parsers/cxx/$(DEPDIR)/ctags-cxx.Tpo -c -o parsers/cxx/ctags-cxx.o `test -f 'parsers/cxx/cxx.c' || echo '$(srcdir)/'`parsers/cxx/cxx.c

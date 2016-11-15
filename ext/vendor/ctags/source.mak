@@ -25,13 +25,12 @@ MAIN_HEADS =			\
 	main/htable.h		\
 	main/keyword.h		\
 	main/kind.h		\
-	main/lcpp.h		\
 	main/main.h		\
 	main/mbcs.h		\
 	main/nestlevel.h	\
 	main/objpool.h		\
 	main/options.h		\
-	main/output.h		\
+	main/param.h		\
 	main/parse.h		\
 	main/parsers.h		\
 	main/pcoproc.h		\
@@ -45,6 +44,7 @@ MAIN_HEADS =			\
 	main/strlist.h		\
 	main/types.h		\
 	main/vstring.h		\
+	main/writer.h		\
 	main/xtag.h		\
 	\
 	$(MIO_HEADS)
@@ -60,7 +60,6 @@ MAIN_SRCS =				\
 	main/htable.c			\
 	main/keyword.c			\
 	main/kind.c			\
-	main/lcpp.c			\
 	main/lregex.c			\
 	main/lxcmd.c			\
 	main/lxpath.c			\
@@ -69,10 +68,7 @@ MAIN_SRCS =				\
 	main/nestlevel.c		\
 	main/objpool.c			\
 	main/options.c			\
-	main/output-etags.c		\
-	main/output-ctags.c		\
-	main/output-json.c		\
-	main/output-xref.c		\
+	main/param.c			\
 	main/parse.c			\
 	main/pcoproc.c			\
 	main/promise.c			\
@@ -84,6 +80,11 @@ MAIN_SRCS =				\
 	main/sort.c			\
 	main/strlist.c			\
 	main/vstring.c			\
+	main/writer.c			\
+	main/writer-etags.c		\
+	main/writer-ctags.c		\
+	main/writer-json.c		\
+	main/writer-xref.c		\
 	main/xtag.c			\
 	\
 	$(REPOINFO_SRCS) \
@@ -107,6 +108,7 @@ PARSER_HEADS = \
 	parsers/meta-iniconf.h \
 	parsers/meta-m4.h \
 	parsers/meta-make.h \
+	parsers/meta-cpreprocessor.h \
 	\
 	$(NULL)
 
@@ -124,6 +126,7 @@ PARSER_SRCS =				\
 	parsers/clojure.c		\
 	parsers/css.c			\
 	parsers/cobol.c			\
+	parsers/cpreprocessor.c		\
 	parsers/cxx/cxx.c		\
 	parsers/cxx/cxx_debug.c		\
 	parsers/cxx/cxx_keyword.c		\

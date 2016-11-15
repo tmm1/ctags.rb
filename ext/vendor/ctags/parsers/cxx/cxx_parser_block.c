@@ -18,14 +18,14 @@
 
 #include "parse.h"
 #include "vstring.h"
-#include "lcpp.h"
+#include "../meta-cpreprocessor.h"
 #include "debug.h"
 #include "keyword.h"
 #include "read.h"
 
 #include <string.h>
 
-static bool cxxParserParseBlockHandleOpeningBracket(void)
+bool cxxParserParseBlockHandleOpeningBracket(void)
 {
 	CXX_DEBUG_ENTER();
 
@@ -66,7 +66,9 @@ static bool cxxParserParseBlockHandleOpeningBracket(void)
 									// FIXME: This check could be made stricter?
 									CXXTokenTypeSingleColon | CXXTokenTypeComma
 							))
-						)
+						) &&
+						// "override" is handled as identifier since it's a keyword only after function signatures
+						(strcmp(vStringValue(g_cxx.pToken->pPrev->pszWord),"override") != 0)
 					) || (
 						// type var[][][]..[] { ... }
 						// (but not '[] { ... }' which is a parameterelss lambda)
@@ -349,7 +351,6 @@ process_token:
 							}
 							cxxParserNewStatement();
 						}
-					break;
 					break;
 					case CXXKeywordCASE:
 						// ignore
