@@ -411,7 +411,7 @@ static bool cxxParserParseEnumStructClassOrUnionFullDeclarationTrailer(
 		CXX_DEBUG_LEAVE_TEXT("Got EOF after enum/class/struct/union block");
 		return true;
 	}
-	
+
 	if(g_cxx.pTokenChain->iCount < 2)
 	{
 		CXX_DEBUG_LEAVE_TEXT("Nothing interesting after enum/class/struct block");
@@ -591,7 +591,7 @@ bool cxxParserParseEnum(void)
 	{
 		// skip type
 		CXX_DEBUG_PRINT("Single colon, trying to skip type");
-		
+
 		pTypeBegin = g_cxx.pToken;
 
 		if(!cxxParserParseUpToOneOf(
@@ -675,6 +675,7 @@ bool cxxParserParseEnum(void)
 		tag->isFileScope = !isInputHeaderFile();
 
 		CXXToken * pTypeName = NULL;
+		vString * pszProperties = NULL;
 
 		if(pTypeEnd)
 		{
@@ -683,10 +684,13 @@ bool cxxParserParseEnum(void)
 		}
 
 		if(bIsScopedEnum)
-			cxxTagSetProperties(CXXTagPropertyScopedEnum);
+			pszProperties = cxxTagSetProperties(CXXTagPropertyScopedEnum);
 
 		iCorkQueueIndex = cxxTagCommit();
-		
+
+		if (pszProperties)
+			vStringDelete (pszProperties);
+
 		if(pTypeName)
 			cxxTokenDestroy(pTypeName);
 	}
@@ -1351,7 +1355,7 @@ bool cxxParserParseIfForWhileSwitch(void)
 			);
 
 		// Simple check for cases like if(a & b), if(a * b).
-		// If there is &, && or * then we expect there to be also a =.
+		// If there is &, && or * then we expect there to be also a = or a ;.
 		if(
 				// & && * not present
 				!cxxTokenChainFirstTokenOfType(
@@ -1359,10 +1363,10 @@ bool cxxParserParseIfForWhileSwitch(void)
 						CXXTokenTypeAnd | CXXTokenTypeMultipleAnds |
 						CXXTokenTypeStar
 					) ||
-				// or = present
+				// or [=;] present
 				cxxTokenChainFirstTokenOfType(
 						pChain,
-						CXXTokenTypeAssignment
+						CXXTokenTypeAssignment | CXXTokenTypeSemicolon
 					)
 			)
 		{

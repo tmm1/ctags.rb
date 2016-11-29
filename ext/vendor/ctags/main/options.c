@@ -71,7 +71,7 @@
 # define RECURSE_SUPPORTED
 #endif
 
-#define isCompoundOption(c)  (bool) (strchr ("fohiILpDb", (c)) != NULL)
+#define isCompoundOption(c)  (bool) (strchr ("fohiILpdDb", (c)) != NULL)
 
 #define SUBDIR_OPTLIB "optlib"
 #define SUBDIR_PRELOAD "preload"
@@ -176,7 +176,7 @@ optionValues Option = {
 	.machinable = false,
 	.withListHeader = true,
 #ifdef DEBUG
-	0, 0        /* -D, -b */
+	0, 0        /* -d, -b */
 #endif
 };
 
@@ -195,9 +195,11 @@ static optionDescription LongOptionDescription [] = {
 #endif
  {0,"  -B   Use backward searching patterns (?...?)."},
 #ifdef DEBUG
- {1,"  -D <level>"},
+ {1,"  -d <level>"},
  {1,"       Set debug level."},
 #endif
+ {1,"  -D <macro>=<definition>"},
+ {1,"       (CPreProcessor) Give definition for macro."},
  {0,"  -e   Output tag file for use with Emacs."},
  {1,"  -f <name>"},
  {1,"       Write tags to specified file. Value of \"-\" writes tags to stdout"},
@@ -2235,11 +2237,13 @@ static void addIgnoreListFromFile (const char *const fileName)
 	stringListDelete(tokens);
 }
 
-static void processIgnoreOption (const char *const list)
+static void processIgnoreOption (const char *const list, int IgnoreOrDefine)
 {
 	langType lang = getNamedLanguage ("CPreProcessor", 0);
 
-	if (strchr ("@./\\", list [0]) != NULL)
+	if (IgnoreOrDefine == 'D')
+		applyParameter (lang, "define", list);
+	else if (strchr ("@./\\", list [0]) != NULL)
 	{
 		const char* fileName = (*list == '@') ? list + 1 : list;
 		addIgnoreListFromFile (fileName);
@@ -2778,7 +2782,7 @@ static void processShortOption (
 				error (FATAL, "-%s: Invalid line number", option);
 			Option.breakLine = atol (parameter);
 			break;
-		case 'D':
+		case 'd':
 			if (!strToLong(parameter, 0, &Option.debugLevel))
 				error (FATAL, "-%s: Invalid debug level", option);
 
@@ -2788,6 +2792,9 @@ static void processShortOption (
 #endif
 		case 'B':
 			Option.backward = true;
+			break;
+		case 'D':
+			processIgnoreOption (parameter, *option);
 			break;
 		case 'e':
 			checkOptionOrder (option, false);
@@ -2817,7 +2824,7 @@ static void processShortOption (
 			processHeaderListOption (*option, parameter);
 			break;
 		case 'I':
-			processIgnoreOption (parameter);
+			processIgnoreOption (parameter, *option);
 			break;
 		case 'L':
 			if (Option.fileList != NULL)

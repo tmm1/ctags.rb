@@ -217,13 +217,13 @@ void cxxTokenChainInsertAfter(CXXTokenChain * tc,CXXToken * before,CXXToken * t)
 		cxxTokenChainPrepend(tc,t);
 		return;
 	}
-	
+
 	if(!before->pNext)
 	{
 		cxxTokenChainAppend(tc,t);
 		return;
 	}
-	
+
 	t->pNext = before->pNext;
 	t->pPrev = before;
 	before->pNext = t;
@@ -286,7 +286,7 @@ void cxxTokenChainJoinRangeInString(
 	cxxTokenAppendToString(s,t);
 
 	if((!(uFlags & CXXTokenChainJoinNoTrailingSpaces)) && t->bFollowedBySpace)
-		vStringCatS(s," ");
+		vStringPut (s, ' ');
 
 	while(t && (t != to))
 	{
@@ -303,7 +303,7 @@ void cxxTokenChainJoinRangeInString(
 				(!(uFlags & CXXTokenChainJoinNoTrailingSpaces)) &&
 				t->bFollowedBySpace
 			)
-			vStringCatS(s," ");
+			vStringPut (s, ' ');
 	}
 }
 
@@ -345,7 +345,7 @@ void cxxTokenChainJoinInString(
 			(!(uFlags & CXXTokenChainJoinNoTrailingSpaces)) &&
 			t->bFollowedBySpace
 		)
-		vStringCatS(s," ");
+		vStringPut (s, ' ');
 
 	t = t->pNext;
 	while(t)
@@ -359,7 +359,7 @@ void cxxTokenChainJoinInString(
 				(!(uFlags & CXXTokenChainJoinNoTrailingSpaces)) &&
 				t->bFollowedBySpace
 			)
-			vStringCatS(s," ");
+			vStringPut (s, ' ');
 
 		t = t->pNext;
 	}
@@ -437,6 +437,46 @@ void cxxTokenChainMoveEntryRange(
 	}
 }
 
+CXXTokenChain * cxxTokenChainSplitOnComma(CXXTokenChain * tc)
+{
+	if(!tc)
+		return NULL;
+
+	CXXTokenChain * pRet = cxxTokenChainCreate();
+
+	CXXToken * pToken = cxxTokenChainFirst(tc);
+
+	if(!pToken)
+		return pRet;
+
+	CXXToken * pStart = pToken;
+
+	while(pStart && pToken->pNext)
+	{
+		while(pToken->pNext && (!cxxTokenTypeIs(pToken->pNext,CXXTokenTypeComma)))
+			pToken = pToken->pNext;
+
+		CXXToken * pNew = cxxTokenChainExtractRange(pStart,pToken,0);
+		if(pNew)
+			cxxTokenChainAppend(pRet,pNew);
+
+		pToken = pToken->pNext; // comma or nothing
+		if(pToken)
+			pToken = pToken->pNext; // after comma
+		pStart = pToken;
+	}
+
+	if(pStart)
+	{
+		// finished without comma
+		CXXToken * pNew = cxxTokenChainExtractRange(pStart,cxxTokenChainLast(tc),0);
+		if(pNew)
+			cxxTokenChainAppend(pRet,pNew);
+	}
+
+	return pRet;
+}
+
 
 void cxxTokenChainCondense(CXXTokenChain * tc,unsigned int uFlags)
 {
@@ -461,7 +501,7 @@ void cxxTokenChainCondense(CXXTokenChain * tc,unsigned int uFlags)
 				(!(uFlags & CXXTokenChainCondenseNoTrailingSpaces)) &&
 				t->bFollowedBySpace
 			)
-			vStringCatS(pCondensed->pszWord," ");
+			vStringPut (pCondensed->pszWord, ' ');
 
 		pCondensed->bFollowedBySpace = t->bFollowedBySpace;
 		cxxTokenDestroy(t);
@@ -912,7 +952,7 @@ CXXToken * cxxTokenChainExtractRange(
 			(!(uFlags & CXXTokenChainExtractRangeNoTrailingSpaces)) &&
 			pToken->bFollowedBySpace
 		)
-		vStringCatS(pRet->pszWord," ");
+		vStringPut (pRet->pszWord, ' ');
 	pRet->bFollowedBySpace = pToken->bFollowedBySpace;
 
 	while(pToken != to)
@@ -925,7 +965,7 @@ CXXToken * cxxTokenChainExtractRange(
 				(!(uFlags & CXXTokenChainExtractRangeNoTrailingSpaces)) &&
 				pToken->bFollowedBySpace
 			)
-			vStringCatS(pRet->pszWord," ");
+			vStringPut (pRet->pszWord, ' ');
 		pRet->bFollowedBySpace = pToken->bFollowedBySpace;
 	}
 
@@ -968,7 +1008,7 @@ CXXToken * cxxTokenChainExtractIndexRange(
 			(!(uFlags & CXXTokenChainExtractRangeNoTrailingSpaces)) &&
 			pToken->bFollowedBySpace
 		)
-		vStringCatS(pRet->pszWord," ");
+		vStringPut (pRet->pszWord, ' ');
 	pRet->bFollowedBySpace = pToken->bFollowedBySpace;
 
 	while(idx < iLastIndex)
@@ -981,7 +1021,7 @@ CXXToken * cxxTokenChainExtractIndexRange(
 				(!(uFlags & CXXTokenChainExtractRangeNoTrailingSpaces)) &&
 				pToken->bFollowedBySpace
 			)
-			vStringCatS(pRet->pszWord," ");
+			vStringPut (pRet->pszWord, ' ');
 		pRet->bFollowedBySpace = pToken->bFollowedBySpace;
 		idx++;
 	}

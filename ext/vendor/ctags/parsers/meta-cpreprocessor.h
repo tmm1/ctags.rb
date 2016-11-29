@@ -14,6 +14,7 @@
 */
 #include "general.h"  /* must always come first */
 #include "types.h"
+#include "vstring.h"
 
 /*
 *   MACROS
@@ -72,13 +73,37 @@ extern void cppTerminate (void);
 extern void cppBeginStatement (void);
 extern void cppEndStatement (void);
 extern void cppUngetc (const int c);
+extern void cppUngetString(const char * string,int len);
 extern int cppGetc (void);
 extern int cppSkipOverCComment (void);
 
-typedef struct sCppIgnoredTokenInfo {
-	bool ignoreFollowingParenthesis; /* -I SOMETHING+ */
-	char * replacement;              /* -I SOMETHING=REPLACEMENT */
-} cppIgnoredTokenInfo;
-extern const cppIgnoredTokenInfo * cppIsIgnoreToken (const char *const name);
+#define CPP_MACRO_REPLACEMENT_FLAG_VARARGS 1
+#define CPP_MACRO_REPLACEMENT_FLAG_STRINGIFY 2
+
+typedef struct sCppMacroReplacementPartInfo {
+	int parameterIndex; /* -1 if this part is a constant */
+	int flags;
+	vString * constant; /* not NULL only if parameterIndex != -1 */
+	struct sCppMacroReplacementPartInfo * next;
+} cppMacroReplacementPartInfo;
+
+typedef struct sCppMacroInfo {
+	bool hasParameterList; /* true if the macro has a trailing () */
+	cppMacroReplacementPartInfo * replacements;
+} cppMacroInfo;
+
+extern const cppMacroInfo * cppFindMacro (const char *const name);
+
+/*
+* Build a replacement string for the specified macro.
+* If the macro has parameters, they will be used.
+* Parameters not found in the list will be assumed to be empty.
+* May return NULL or equivalently an empty replacement string.
+*/
+extern vString * cppBuildMacroReplacement(
+		const cppMacroInfo * macro,
+		const char ** parameters, /* may be NULL */
+		int parameterCount
+	);
 
 #endif  /* CTAGS_MAIN_GET_H */

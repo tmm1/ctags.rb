@@ -175,9 +175,10 @@ bool cxxParserExtractVariableDeclarations(CXXTokenChain * pChain,unsigned int uF
 		}
 
 		CXX_DEBUG_PRINT(
-				"Found notable token '%s' of type 0x%02x",
+				"Found notable token '%s' of type 0x%02x(%s)",
 				vStringValue(t->pszWord),
-				t->eType
+				t->eType,
+				cxxDebugTypeDecode(t->eType)
 			);
 
 		// Now before the notable token there MUST be an identifier
@@ -326,16 +327,36 @@ bool cxxParserExtractVariableDeclarations(CXXTokenChain * pChain,unsigned int uF
 				while(t->pNext && cxxTokenTypeIs(t->pNext,CXXTokenTypeSquareParenthesisChain))
 					t = t->pNext;
 
-				if(
-						(!t->pNext) ||
-						(!cxxTokenTypeIsOneOf(
-								t->pNext,
-								CXXTokenTypeComma | CXXTokenTypeSemicolon |
-								CXXTokenTypeAssignment | CXXTokenTypeBracketChain
-							))
-					)
+				if(!t->pNext)
 				{
-					CXX_DEBUG_LEAVE_TEXT("No comma, semicolon, = or {} after []");
+					CXX_DEBUG_LEAVE_TEXT("No token after []");
+					return bGotVariable;
+				}
+
+				// skip identifies attached to the array as attributes
+				while(t->pNext && cxxTokenTypeIs(t->pNext, CXXTokenTypeIdentifier))
+				{
+					t = t->pNext;
+					// skip macro argument(s)
+					if (t->pNext && cxxTokenTypeIs(t->pNext, CXXTokenTypeParenthesisChain))
+						t = t->pNext;
+				}
+
+				if (!t->pNext)
+				{
+					CXX_DEBUG_LEAVE_TEXT("No token after attribute(s) attached to []");
+					return bGotVariable;
+				}
+
+				if(!cxxTokenTypeIsOneOf(
+							t->pNext,
+							CXXTokenTypeComma | CXXTokenTypeSemicolon |
+							CXXTokenTypeAssignment | CXXTokenTypeBracketChain
+							))
+				{
+					CXX_DEBUG_LEAVE_TEXT("No comma, semicolon, = or {} after [] (\"%s\", %s)",
+								vStringValue (t->pNext->pszWord),
+								cxxDebugTypeDecode (t->pNext->eType));
 					return bGotVariable;
 				}
 

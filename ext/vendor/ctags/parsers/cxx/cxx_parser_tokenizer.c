@@ -961,21 +961,25 @@ static bool cxxParserParseNextTokenCondenseAttribute(void)
 	return cxxParserParseNextToken();
 }
 
-// An ignore token was encountered and it specifies to skip the
-// eventual following parenthesis.
+// An macro token was encountered and it expects a parameter list.
 // The routine has to check if there is a following parenthesis
 // and eventually skip it but it MUST NOT parse the next token
-// if it is not a parenthesis. This is because the ignored token
+// if it is not a parenthesis. This is because the macro token
 // may have a replacement and is that one that has to be returned
 // back to the caller from cxxParserParseNextToken().
-static bool cxxParserParseNextTokenSkipIgnoredParenthesis(void)
+static bool cxxParserParseNextTokenSkipMacroParenthesis(CXXToken ** ppChain)
 {
 	CXX_DEBUG_ENTER();
+
+	CXX_DEBUG_ASSERT(ppChain,"ppChain should not be null here");
 
 	cxxParserSkipToNonWhiteSpace();
 
 	if(g_cxx.iChar != '(')
+	{
+		*ppChain = NULL;
 		return true; // no parenthesis
+	}
 
 	if(!cxxParserParseNextToken())
 	{
@@ -1007,10 +1011,68 @@ static bool cxxParserParseNextTokenSkipIgnoredParenthesis(void)
 		);
 
 	// Now just kill the chain.
-	cxxTokenDestroy(cxxTokenChainTakeLast(g_cxx.pTokenChain));
+	*ppChain = cxxTokenChainTakeLast(g_cxx.pTokenChain);
 
 	CXX_DEBUG_LEAVE();
 	return true;
+}
+
+static void cxxParserParseNextTokenApplyReplacement(
+		const cppMacroInfo * pInfo,
+		CXXToken * pParameterChainToken
+	)
+{
+	CXX_DEBUG_ENTER();
+
+	CXX_DEBUG_ASSERT(pInfo,"Info must be not null");
+	CXX_DEBUG_ASSERT(pInfo->replacements,"There should be a replacement");
+
+	if(!pInfo->hasParameterList)
+	{
+		CXX_DEBUG_ASSERT(!pParameterChainToken,"This shouldn't have been extracted");
+	}
+
+	CXXTokenChain * pParameters = NULL;
+	const char ** aParameters = NULL;
+	int iParameterCount = 0;
+
+	if(pInfo->hasParameterList && pParameterChainToken && (pParameterChainToken->pChain->iCount >= 3))
+	{
+		// kill parenthesis
+		cxxTokenChainDestroyFirst(pParameterChainToken->pChain);
+		cxxTokenChainDestroyLast(pParameterChainToken->pChain);
+
+		pParameters = cxxTokenChainSplitOnComma(
+				pParameterChainToken->pChain
+			);
+
+		aParameters = (const char **)eMalloc(sizeof(const char *) * pParameters->iCount);
+		CXXToken * pParam = cxxTokenChainFirst(pParameters);
+		while(pParam)
+		{
+			aParameters[iParameterCount] = vStringValue(pParam->pszWord);
+			iParameterCount++;
+			pParam = pParam->pNext;
+		}
+
+		CXX_DEBUG_ASSERT(iParameterCount == pParameters->iCount,"Bad number of parameters found");
+	}
+
+	vString * pReplacement = cppBuildMacroReplacement(pInfo,aParameters,iParameterCount);
+
+	if(pParameters)
+	{
+		cxxTokenChainDestroy(pParameters);
+		eFree(aParameters);
+	}
+
+	CXX_DEBUG_PRINT("Applying complex replacement '%s'",vStringValue(pReplacement));
+
+	cppUngetString(vStringValue(pReplacement),vStringLength(pReplacement));
+
+	vStringDelete(pReplacement);
+
+	CXX_DEBUG_LEAVE();
 }
 
 bool cxxParserParseNextToken(void)
@@ -1050,7 +1112,7 @@ bool cxxParserParseNextToken(void)
 
 	unsigned int uInfo = UINFO(g_cxx.iChar);
 
-	//printf("Char %c %02x info %u\n",g_cxx.iChar,g_cxx.iChar,uInfo);
+	//fprintf(stderr,"Char %c %02x info %u\n",g_cxx.iChar,g_cxx.iChar,uInfo);
 
 	if(uInfo & CXXCharTypeStartOfIdentifier)
 	{
@@ -1102,12 +1164,7 @@ bool cxxParserParseNextToken(void)
 			g_cxx.iChar = cppGetc();
 		}
 
-		int iCXXKeyword;
-		const cppIgnoredTokenInfo * pIgnore = NULL;
-
-check_keyword:
-
-		iCXXKeyword = lookupKeyword(t->pszWord->buffer,g_cxx.eLanguage);
+		int iCXXKeyword = lookupKeyword(t->pszWord->buffer,g_cxx.eLanguage);
 		if(iCXXKeyword >= 0)
 		{
 			if(
@@ -1136,48 +1193,56 @@ check_keyword:
 				}
 			}
 		} else {
-			// We can enter here also from a jump to check_keyword after finding
-			// and ignored token and a replacement.
 
-			if(!pIgnore)
+			const cppMacroInfo * pMacro = cppFindMacro(vStringValue(t->pszWord));
+
+			if(pMacro)
 			{
-				pIgnore = cppIsIgnoreToken(vStringValue(t->pszWord));
+				CXX_DEBUG_PRINT("Macro %s",vStringValue(t->pszWord));
 
-				if(pIgnore)
+				cxxTokenChainDestroyLast(g_cxx.pTokenChain);
+
+				CXXToken * pParameterChain = NULL;
+
+				if(pMacro->hasParameterList)
 				{
-					CXX_DEBUG_PRINT("Ignore token %s",vStringValue(t->pszWord));
-
-					if(pIgnore->replacement)
-					{
-						CXX_DEBUG_PRINT(
-								"The token has replacement %s: applying",
-								pIgnore->replacement
-							);
-						vStringClear(t->pszWord);
-						vStringCatS(t->pszWord,pIgnore->replacement);
-					} else {
-						// kill it
-						CXX_DEBUG_PRINT("Ignore token has no replacement");
-						cxxTokenChainDestroyLast(g_cxx.pTokenChain);
-					}
-					
-					if(pIgnore->ignoreFollowingParenthesis)
-					{
-						CXX_DEBUG_PRINT("Ignored token specifies to ignore parens too");
-						if(!cxxParserParseNextTokenSkipIgnoredParenthesis())
-							return false;
-					}
-					
-					if(pIgnore->replacement)
-					{
-						// Already have a token to return
-						// Check again for keywords
-						goto check_keyword;
-					}
-					
-					// Have no token to return: parse it
-					return cxxParserParseNextToken();
+					CXX_DEBUG_PRINT("Macro has parameter list");
+					if(!cxxParserParseNextTokenSkipMacroParenthesis(&pParameterChain))
+						return false;
 				}
+
+				// This is used to avoid infinite recursion in substitution
+				// (things like -D foo=foo or similar)
+				static int iReplacementRecursionCount = 0;
+
+				if(pMacro->replacements)
+				{
+					CXX_DEBUG_PRINT("The token has replacements: applying");
+
+					if(iReplacementRecursionCount < 1024)
+					{
+						// unget last char
+						cppUngetc(g_cxx.iChar);
+						// unget the replacement
+						cxxParserParseNextTokenApplyReplacement(
+								pMacro,
+								pParameterChain
+							);
+
+						g_cxx.iChar = cppGetc();
+					}
+				}
+
+				if(pParameterChain)
+					cxxTokenDestroy(pParameterChain);
+
+				iReplacementRecursionCount++;
+				// Have no token to return: parse it
+				CXX_DEBUG_PRINT("Parse inner token");
+				bool bRet = cxxParserParseNextToken();
+				CXX_DEBUG_PRINT("Parsed inner token: %s type %d",g_cxx.pToken->pszWord->buffer,g_cxx.pToken->eType);
+				iReplacementRecursionCount--;
+				return bRet;
 			}
 		}
 

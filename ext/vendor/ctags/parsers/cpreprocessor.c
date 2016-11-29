@@ -26,6 +26,8 @@
 #include "parse.h"
 #include "xtag.h"
 
+#include "cxx/cxx_debug.h"
+
 /*
 *   MACROS
 */
@@ -65,7 +67,12 @@ enum eState {
  */
 typedef struct sCppState {
 	langType lang;
-	int		ungetch, ungetch2;   /* ungotten characters, if any */
+
+	int * ungetBuffer;       /* memory buffer for unget characters */
+	int ungetBufferSize;      /* the current unget buffer size */
+	int * ungetPointer;      /* the current unget char: points in the middle of the buffer */
+	int ungetDataSize;        /* the number of valid unget characters in the buffer */
+
 	bool resolveRequired;     /* must resolve if/else/elif/endif branch */
 	bool hasAtLiteralStrings; /* supports @"c:\" strings */
 	bool hasCxxRawLiteralStrings; /* supports R"xxx(...)xxx" strings */
@@ -131,7 +138,10 @@ static bool BraceFormat = false;
 
 static cppState Cpp = {
 	LANG_IGNORE,
-	'\0', '\0',  /* ungetch characters */
+	NULL,        /* ungetBuffer */
+	0,           /* ungetBufferSize */
+	NULL,        /* ungetPointer */
+	0,           /* ungetDataSize */
 	false,       /* resolveRequired */
 	false,       /* hasAtLiteralStrings */
 	false,       /* hasCxxRawLiteralStrings */
@@ -182,8 +192,9 @@ extern void cppInit (const bool state, const bool hasAtLiteralStrings,
 		initializeParser (t);
 	}
 
-	Cpp.ungetch         = '\0';
-	Cpp.ungetch2        = '\0';
+	Cpp.ungetBuffer = NULL;
+	Cpp.ungetPointer = NULL;
+
 	Cpp.resolveRequired = false;
 	Cpp.hasAtLiteralStrings = hasAtLiteralStrings;
 	Cpp.hasCxxRawLiteralStrings = hasCxxRawLiteralStrings;
@@ -218,6 +229,12 @@ extern void cppTerminate (void)
 		vStringDelete (Cpp.directive.name);
 		Cpp.directive.name = NULL;
 	}
+
+	if(Cpp.ungetBuffer)
+	{
+		eFree(Cpp.ungetBuffer);
+		Cpp.ungetBuffer = NULL;
+	}
 }
 
 extern void cppBeginStatement (void)
@@ -237,15 +254,119 @@ extern void cppEndStatement (void)
 *   directives and may emit a tag for #define directives.
 */
 
-/*  This puts a character back into the input queue for the input File.
- *  Up to two characters may be ungotten.
- */
+/*  This puts a character back into the input queue for the input File. */
 extern void cppUngetc (const int c)
 {
-	Assert (Cpp.ungetch2 == '\0');
-	Cpp.ungetch2 = Cpp.ungetch;
-	Cpp.ungetch = c;
+	if(!Cpp.ungetPointer)
+	{
+		// no unget data
+		if(!Cpp.ungetBuffer)
+		{
+			Cpp.ungetBuffer = (int *)eMalloc(8 * sizeof(int));
+			Cpp.ungetBufferSize = 8;
+		}
+		Assert(Cpp.ungetBufferSize > 0);
+		Cpp.ungetPointer = Cpp.ungetBuffer + Cpp.ungetBufferSize - 1;
+		*(Cpp.ungetPointer) = c;
+		Cpp.ungetDataSize = 1;
+		return;
+	}
+
+	// Already have some unget data in the buffer. Must prepend.
+	Assert(Cpp.ungetBuffer);
+	Assert(Cpp.ungetBufferSize > 0);
+	Assert(Cpp.ungetDataSize > 0);
+	Assert(Cpp.ungetPointer >= Cpp.ungetBuffer);
+
+	if(Cpp.ungetPointer == Cpp.ungetBuffer)
+	{
+		Cpp.ungetBufferSize += 8;
+		int * tmp = (int *)eMalloc(Cpp.ungetBufferSize * sizeof(int));
+		memcpy(tmp+8,Cpp.ungetPointer,Cpp.ungetDataSize * sizeof(int));
+		eFree(Cpp.ungetBuffer);
+		Cpp.ungetBuffer = tmp;
+		Cpp.ungetPointer = tmp + 7;
+	} else {
+		Cpp.ungetPointer--;
+	}
+
+	*(Cpp.ungetPointer) = c;
+	Cpp.ungetDataSize++;
 }
+
+
+/*  This puts an entire string back into the input queue for the input File. */
+void cppUngetString(const char * string,int len)
+{
+	if(!string)
+		return;
+	if(len < 1)
+		return;
+
+	if(!Cpp.ungetPointer)
+	{
+		// no unget data
+		if(!Cpp.ungetBuffer)
+		{
+			Cpp.ungetBufferSize = 8 + len;
+			Cpp.ungetBuffer = (int *)eMalloc(Cpp.ungetBufferSize * sizeof(int));
+		} else if(Cpp.ungetBufferSize < len)
+		{
+			Cpp.ungetBufferSize = 8 + len;
+			Cpp.ungetBuffer = (int *)eRealloc(Cpp.ungetBuffer,Cpp.ungetBufferSize * sizeof(int));
+		}
+		Cpp.ungetPointer = Cpp.ungetBuffer + Cpp.ungetBufferSize - len;
+	} else {
+		// Already have some unget data in the buffer. Must prepend.
+		Assert(Cpp.ungetBuffer);
+		Assert(Cpp.ungetBufferSize > 0);
+		Assert(Cpp.ungetDataSize > 0);
+		Assert(Cpp.ungetPointer >= Cpp.ungetBuffer);
+
+		if(Cpp.ungetBufferSize < (Cpp.ungetDataSize + len))
+		{
+			Cpp.ungetBufferSize = 8 + len + Cpp.ungetDataSize;
+			int * tmp = (int *)eMalloc(Cpp.ungetBufferSize * sizeof(int));
+			memcpy(tmp + 8 + len,Cpp.ungetPointer,Cpp.ungetDataSize * sizeof(int));
+			eFree(Cpp.ungetBuffer);
+			Cpp.ungetBuffer = tmp;
+			Cpp.ungetPointer = tmp + 8;
+		} else {
+			Cpp.ungetPointer -= len;
+			Assert(Cpp.ungetPointer >= Cpp.ungetBuffer);
+		}
+	}
+
+	int * p = Cpp.ungetPointer;
+	const char * s = string;
+	const char * e = string + len;
+
+	while(s < e)
+		*p++ = *s++;
+
+	Cpp.ungetDataSize += len;
+}
+
+static int cppGetcFromUngetBufferOrFile(void)
+{
+	if(Cpp.ungetPointer)
+	{
+		Assert(Cpp.ungetBuffer);
+		Assert(Cpp.ungetBufferSize > 0);
+		Assert(Cpp.ungetDataSize > 0);
+
+		int c = *(Cpp.ungetPointer);
+		Cpp.ungetDataSize--;
+		if(Cpp.ungetDataSize > 0)
+			Cpp.ungetPointer++;
+		else
+			Cpp.ungetPointer = NULL;
+		return c;
+	}
+
+	return getcFromInputFile();
+}
+
 
 /*  Reads a directive, whose first character is given by "c", into "name".
  */
@@ -257,10 +378,10 @@ static bool readDirective (int c, char *const name, unsigned int maxLength)
 	{
 		if (i > 0)
 		{
-			c = getcFromInputFile ();
+			c = cppGetcFromUngetBufferOrFile ();
 			if (c == EOF  ||  ! isalpha (c))
 			{
-				ungetcToInputFile (c);
+				cppUngetc (c);
 				break;
 			}
 		}
@@ -280,9 +401,9 @@ static void readIdentifier (int c, vString *const name)
 	do
 	{
 		vStringPut (name, c);
-		c = getcFromInputFile ();
-	} while (c != EOF && cppIsident (c));
-	ungetcToInputFile (c);
+		c = cppGetcFromUngetBufferOrFile ();
+	} while (c != EOF  && cppIsident (c));
+	cppUngetc (c);
 }
 
 static void readFilename (int c, vString *const name)
@@ -291,7 +412,7 @@ static void readFilename (int c, vString *const name)
 
 	vStringClear (name);
 
-	while (c = getcFromInputFile (), (c != EOF && c != c_end && c != '\n'))
+	while (c = cppGetcFromUngetBufferOrFile (), (c != EOF && c != c_end && c != '\n'))
 		vStringPut (name, c);
 }
 
@@ -463,6 +584,10 @@ static void makeIncludeTag (const  char *const name, bool systemHeader)
 static vString *signature;
 static int directiveDefine (const int c, bool undef)
 {
+	// FIXME: We could possibly handle the macros here!
+	//        However we'd need a separate hash table for macros of the current file
+	//        to avoid breaking the "global" ones.
+
 	int r = CORK_NIL;
 
 	if (cppIsident1 (c))
@@ -472,7 +597,7 @@ static int directiveDefine (const int c, bool undef)
 		{
 			int p;
 
-			p = getcFromInputFile ();
+			p = cppGetcFromUngetBufferOrFile ();
 			if (p == '(')
 			{
 				signature = vStringNewOrClear (signature);
@@ -480,7 +605,7 @@ static int directiveDefine (const int c, bool undef)
 					if (!isspacetab(p))
 						vStringPut (signature, p);
 					/* TODO: Macro parameters can be captured here. */
-					p = getcFromInputFile ();
+					p = cppGetcFromUngetBufferOrFile ();
 				} while (p != ')' && p != EOF);
 
 				if (p == ')')
@@ -493,7 +618,7 @@ static int directiveDefine (const int c, bool undef)
 			}
 			else
 			{
-				ungetcToInputFile (p);
+				cppUngetc (p);
 				r = makeDefineTag (vStringValue (Cpp.directive.name), NULL, undef);
 			}
 		}
@@ -524,7 +649,7 @@ static void directivePragma (int c)
 			/* generate macro tag for weak name */
 			do
 			{
-				c = getcFromInputFile ();
+				c = cppGetcFromUngetBufferOrFile ();
 			} while (c == SPACE);
 			if (cppIsident1 (c))
 			{
@@ -627,7 +752,7 @@ static bool handleDirective (const int c, int *macroCorkIndex)
 static Comment isComment (void)
 {
 	Comment comment;
-	const int next = getcFromInputFile ();
+	const int next = cppGetcFromUngetBufferOrFile ();
 
 	if (next == '*')
 		comment = COMMENT_C;
@@ -637,7 +762,7 @@ static Comment isComment (void)
 		comment = COMMENT_D;
 	else
 	{
-		ungetcToInputFile (next);
+		cppUngetc (next);
 		comment = COMMENT_NONE;
 	}
 	return comment;
@@ -648,15 +773,15 @@ static Comment isComment (void)
  */
 int cppSkipOverCComment (void)
 {
-	int c = getcFromInputFile ();
+	int c = cppGetcFromUngetBufferOrFile ();
 
 	while (c != EOF)
 	{
 		if (c != '*')
-			c = getcFromInputFile ();
+			c = cppGetcFromUngetBufferOrFile ();
 		else
 		{
-			const int next = getcFromInputFile ();
+			const int next = cppGetcFromUngetBufferOrFile ();
 
 			if (next != '/')
 				c = next;
@@ -676,10 +801,10 @@ static int skipOverCplusComment (void)
 {
 	int c;
 
-	while ((c = getcFromInputFile ()) != EOF)
+	while ((c = cppGetcFromUngetBufferOrFile ()) != EOF)
 	{
 		if (c == BACKSLASH)
-			getcFromInputFile ();  /* throw away next character, too */
+			cppGetcFromUngetBufferOrFile ();  /* throw away next character, too */
 		else if (c == NEWLINE)
 			break;
 	}
@@ -691,15 +816,15 @@ static int skipOverCplusComment (void)
  */
 static int skipOverDComment (void)
 {
-	int c = getcFromInputFile ();
+	int c = cppGetcFromUngetBufferOrFile ();
 
 	while (c != EOF)
 	{
 		if (c != '+')
-			c = getcFromInputFile ();
+			c = cppGetcFromUngetBufferOrFile ();
 		else
 		{
-			const int next = getcFromInputFile ();
+			const int next = cppGetcFromUngetBufferOrFile ();
 
 			if (next != '/')
 				c = next;
@@ -720,10 +845,10 @@ static int skipToEndOfString (bool ignoreBackslash)
 {
 	int c;
 
-	while ((c = getcFromInputFile ()) != EOF)
+	while ((c = cppGetcFromUngetBufferOrFile ()) != EOF)
 	{
 		if (c == BACKSLASH && ! ignoreBackslash)
-			getcFromInputFile ();  /* throw away next character, too */
+			cppGetcFromUngetBufferOrFile ();  /* throw away next character, too */
 		else if (c == DOUBLE_QUOTE)
 			break;
 	}
@@ -738,11 +863,11 @@ static int isCxxRawLiteralDelimiterChar (int c)
 
 static int skipToEndOfCxxRawLiteralString (void)
 {
-	int c = getcFromInputFile ();
+	int c = cppGetcFromUngetBufferOrFile ();
 
 	if (c != '(' && ! isCxxRawLiteralDelimiterChar (c))
 	{
-		ungetcToInputFile (c);
+		cppUngetc (c);
 		c = skipToEndOfString (false);
 	}
 	else
@@ -765,15 +890,15 @@ static int skipToEndOfCxxRawLiteralString (void)
 			{
 				unsigned int i = 0;
 
-				while ((c = getcFromInputFile ()) != EOF && i < delimLen && delim[i] == c)
+				while ((c = cppGetcFromUngetBufferOrFile ()) != EOF && i < delimLen && delim[i] == c)
 					i++;
 				if (i == delimLen && c == DOUBLE_QUOTE)
 					break;
 				else
-					ungetcToInputFile (c);
+					cppUngetc (c);
 			}
 		}
-		while ((c = getcFromInputFile ()) != EOF);
+		while ((c = cppGetcFromUngetBufferOrFile ()) != EOF);
 		c = STRING_SYMBOL;
 	}
 	return c;
@@ -788,16 +913,16 @@ static int skipToEndOfChar (void)
 	int c;
 	int count = 0, veraBase = '\0';
 
-	while ((c = getcFromInputFile ()) != EOF)
+	while ((c = cppGetcFromUngetBufferOrFile ()) != EOF)
 	{
 	    ++count;
 		if (c == BACKSLASH)
-			getcFromInputFile ();  /* throw away next character, too */
+			cppGetcFromUngetBufferOrFile ();  /* throw away next character, too */
 		else if (c == SINGLE_QUOTE)
 			break;
 		else if (c == NEWLINE)
 		{
-			ungetcToInputFile (c);
+			cppUngetc (c);
 			break;
 		}
 		else if (Cpp.hasSingleQuoteLiteralNumbers)
@@ -806,7 +931,7 @@ static int skipToEndOfChar (void)
 				veraBase = c;
 			else if (veraBase != '\0'  &&  ! isalnum (c))
 			{
-				ungetcToInputFile (c);
+				cppUngetc (c);
 				break;
 			}
 		}
@@ -825,6 +950,7 @@ static void attachEndFieldMaybe (int macroCorkIndex)
 	}
 }
 
+
 /*  This function returns the next character, stripping out comments,
  *  C pre-processor directives, and the contents of single and double
  *  quoted strings. In short, strip anything which places a burden upon
@@ -837,17 +963,10 @@ extern int cppGetc (void)
 	int c;
 	int macroCorkIndex = CORK_NIL;
 
-	if (Cpp.ungetch != '\0')
-	{
-		c = Cpp.ungetch;
-		Cpp.ungetch = Cpp.ungetch2;
-		Cpp.ungetch2 = '\0';
-		return c;  /* return here to avoid re-calling debugPutc () */
-	}
-	else do
-	{
+
+	do {
 start_loop:
-		c = getcFromInputFile ();
+		c = cppGetcFromUngetBufferOrFile ();
 process:
 		switch (c)
 		{
@@ -907,7 +1026,7 @@ process:
 				{
 					c = skipOverCplusComment ();
 					if (c == NEWLINE)
-						ungetcToInputFile (c);
+						cppUngetc (c);
 				}
 				else if (comment == COMMENT_D)
 					c = skipOverDComment ();
@@ -918,23 +1037,23 @@ process:
 
 			case BACKSLASH:
 			{
-				int next = getcFromInputFile ();
+				int next = cppGetcFromUngetBufferOrFile ();
 
 				if (next == NEWLINE)
 					goto start_loop;
 				else
-					ungetcToInputFile (next);
+					cppUngetc (next);
 				break;
 			}
 
 			case '?':
 			{
-				int next = getcFromInputFile ();
+				int next = cppGetcFromUngetBufferOrFile ();
 				if (next != '?')
-					ungetcToInputFile (next);
+					cppUngetc (next);
 				else
 				{
-					next = getcFromInputFile ();
+					next = cppGetcFromUngetBufferOrFile ();
 					switch (next)
 					{
 						case '(':          c = '[';       break;
@@ -947,8 +1066,8 @@ process:
 						case '-':          c = '~';       break;
 						case '=':          c = '#';       goto process;
 						default:
-							ungetcToInputFile ('?');
-							ungetcToInputFile (next);
+							cppUngetc ('?');
+							cppUngetc (next);
 							break;
 					}
 				}
@@ -960,32 +1079,32 @@ process:
 			 */
 			case '<':
 			{
-				int next = getcFromInputFile ();
+				int next = cppGetcFromUngetBufferOrFile ();
 				switch (next)
 				{
 					case ':':	c = '['; break;
 					case '%':	c = '{'; break;
-					default: ungetcToInputFile (next);
+					default: cppUngetc (next);
 				}
 				goto enter;
 			}
 			case ':':
 			{
-				int next = getcFromInputFile ();
+				int next = cppGetcFromUngetBufferOrFile ();
 				if (next == '>')
 					c = ']';
 				else
-					ungetcToInputFile (next);
+					cppUngetc (next);
 				goto enter;
 			}
 			case '%':
 			{
-				int next = getcFromInputFile ();
+				int next = cppGetcFromUngetBufferOrFile ();
 				switch (next)
 				{
 					case '>':	c = '}'; break;
 					case ':':	c = '#'; goto process;
-					default: ungetcToInputFile (next);
+					default: cppUngetc (next);
 				}
 				goto enter;
 			}
@@ -993,7 +1112,7 @@ process:
 			default:
 				if (c == '@' && Cpp.hasAtLiteralStrings)
 				{
-					int next = getcFromInputFile ();
+					int next = cppGetcFromUngetBufferOrFile ();
 					if (next == DOUBLE_QUOTE)
 					{
 						Cpp.directive.accept = false;
@@ -1001,7 +1120,7 @@ process:
 						break;
 					}
 					else
-						ungetcToInputFile (next);
+						cppUngetc (next);
 				}
 				else if (c == 'R' && Cpp.hasCxxRawLiteralStrings)
 				{
@@ -1030,9 +1149,9 @@ process:
 					    (! cppIsident (prev2) && (prev == 'L' || prev == 'u' || prev == 'U')) ||
 					    (! cppIsident (prev3) && (prev2 == 'u' && prev == '8')))
 					{
-						int next = getcFromInputFile ();
+						int next = cppGetcFromUngetBufferOrFile ();
 						if (next != DOUBLE_QUOTE)
-							ungetcToInputFile (next);
+							cppUngetc (next);
 						else
 						{
 							Cpp.directive.accept = false;
@@ -1058,6 +1177,8 @@ process:
 
 static void findCppTags (void)
 {
+	CXX_DEBUG_INIT();
+
 	cppInit (0, false, false, false,
 			 NULL, 0, NULL, 0, 0);
 
@@ -1071,24 +1192,76 @@ static void findCppTags (void)
  *  Token ignore processing
  */
 
-static hashTable * ignoreTokenTable;
+static hashTable * defineMacroTable;
 
 /*  Determines whether or not "name" should be ignored, per the ignore list.
  */
-extern const cppIgnoredTokenInfo * cppIsIgnoreToken(const char * name)
+extern const cppMacroInfo * cppFindMacro(const char * name)
 {
-	if(!ignoreTokenTable)
+	if(!defineMacroTable)
 		return NULL;
 
-	return (const cppIgnoredTokenInfo *)hashTableGetItem(ignoreTokenTable,(char *)name);
+	return (const cppMacroInfo *)hashTableGetItem(defineMacroTable,(char *)name);
 }
+
+extern vString * cppBuildMacroReplacement(
+		const cppMacroInfo * macro,
+		const char ** parameters, /* may be NULL */
+		int parameterCount
+	)
+{
+	if(!macro)
+		return NULL;
+
+	if(!macro->replacements)
+		return NULL;
+
+	vString * ret = vStringNew();
+
+	cppMacroReplacementPartInfo * r = macro->replacements;
+
+	while(r)
+	{
+		if(r->parameterIndex < 0)
+		{
+			if(r->constant)
+				vStringCat(ret,r->constant);
+		} else {
+			if(parameters && (r->parameterIndex < parameterCount))
+			{
+				if(r->flags & CPP_MACRO_REPLACEMENT_FLAG_STRINGIFY)
+					vStringPut(ret,'"');
+
+				vStringCatS(ret,parameters[r->parameterIndex]);
+				if(r->flags & CPP_MACRO_REPLACEMENT_FLAG_VARARGS)
+				{
+					int idx = r->parameterIndex + 1;
+					while(idx < parameterCount)
+					{
+						vStringPut(ret,',');
+						vStringCatS(ret,parameters[idx]);
+						idx++;
+					}
+				}
+
+				if(r->flags & CPP_MACRO_REPLACEMENT_FLAG_STRINGIFY)
+					vStringPut(ret,'"');
+			}
+		}
+
+		r = r->next;
+	}
+
+	return ret;
+}
+
 
 static void saveIgnoreToken(const char * ignoreToken)
 {
 	if(!ignoreToken)
 		return;
 
-	Assert (ignoreTokenTable);
+	Assert (defineMacroTable);
 
 	const char * c = ignoreToken;
 	char cc = *c;
@@ -1127,34 +1300,343 @@ static void saveIgnoreToken(const char * ignoreToken)
 	if(tokenEnd <= tokenBegin)
 		return;
 
+	cppMacroInfo * info = (cppMacroInfo *)eMalloc(sizeof(cppMacroInfo));
 
-	cppIgnoredTokenInfo * info = (cppIgnoredTokenInfo *)eMalloc(sizeof(cppIgnoredTokenInfo));
+	info->hasParameterList = ignoreFollowingParenthesis;
+	if(replacement)
+	{
+		cppMacroReplacementPartInfo * rep = \
+			(cppMacroReplacementPartInfo *)eMalloc(sizeof(cppMacroReplacementPartInfo));
+		rep->parameterIndex = -1;
+		rep->flags = 0;
+		rep->constant = vStringNewInit(replacement);
+		rep->next = NULL;
+		info->replacements = rep;
+	} else {
+		info->replacements = NULL;
+	}
 
-	info->ignoreFollowingParenthesis = ignoreFollowingParenthesis;
-	info->replacement = replacement ? eStrdup(replacement) : NULL;
-
-	hashTablePutItem(ignoreTokenTable,eStrndup(tokenBegin,tokenEnd - tokenBegin),info);
+	hashTablePutItem(defineMacroTable,eStrndup(tokenBegin,tokenEnd - tokenBegin),info);
 
 	verbose ("    ignore token: %s\n", ignoreToken);
 }
 
-static void freeIgnoredTokenInfo(cppIgnoredTokenInfo * info)
+static void saveMacro(const char * macro)
+{
+	CXX_DEBUG_ENTER_TEXT("Save macro %s",macro);
+
+	if(!macro)
+		return;
+
+	Assert (defineMacroTable);
+
+	const char * c = macro;
+
+	// skip initial spaces
+	while(*c && isspacetab(*c))
+		c++;
+
+	if(!*c)
+	{
+		CXX_DEBUG_LEAVE_TEXT("Bad empty macro definition");
+		return;
+	}
+
+	if(!(isalpha(*c) || (*c == '_')))
+	{
+		CXX_DEBUG_LEAVE_TEXT("Macro does not start with an alphanumeric character");
+		return; // must be a sequence of letters and digits
+	}
+
+	const char * identifierBegin = c;
+
+	while(*c && (isalnum(*c) || (*c == '_')))
+		c++;
+
+	const char * identifierEnd = c;
+
+	CXX_DEBUG_PRINT("Macro identifier '%.*s'",identifierEnd - identifierBegin,identifierBegin);
+
+#define MAX_PARAMS 16
+
+	const char * paramBegin[MAX_PARAMS];
+	const char * paramEnd[MAX_PARAMS];
+
+	int iParamCount = 0;
+
+	while(*c && isspacetab(*c))
+		c++;
+
+	cppMacroInfo * info = (cppMacroInfo *)eMalloc(sizeof(cppMacroInfo));
+
+	if(*c == '(')
+	{
+		// parameter list
+		CXX_DEBUG_PRINT("Macro has a parameter list");
+
+		info->hasParameterList = true;
+
+		c++;
+		while(*c)
+		{
+			while(*c && isspacetab(*c))
+				c++;
+
+			if(*c && (*c != ',') && (*c != ')'))
+			{
+				paramBegin[iParamCount] = c;
+				c++;
+				while(*c && (*c != ',') && (*c != ')') && (!isspacetab(*c)))
+					c++;
+				paramEnd[iParamCount] = c;
+
+				CXX_DEBUG_PRINT(
+						"Macro parameter %d '%.*s'",
+							iParamCount,
+							paramEnd[iParamCount] - paramBegin[iParamCount],
+							paramBegin[iParamCount]
+					);
+
+				iParamCount++;
+				if(iParamCount >= MAX_PARAMS)
+					break;
+			}
+
+			while(*c && isspacetab(*c))
+				c++;
+
+			if(*c == ')')
+				break;
+
+			if(*c == ',')
+				c++;
+		}
+
+		while(*c && (*c != ')'))
+			c++;
+
+		if(*c == ')')
+			c++;
+
+		CXX_DEBUG_PRINT("Got %d parameters",iParamCount);
+
+	} else {
+		info->hasParameterList = false;
+	}
+
+	while(*c && isspacetab(*c))
+		c++;
+
+	info->replacements = NULL;
+
+
+	if(*c == '=')
+	{
+		CXX_DEBUG_PRINT("Macro has a replacement part");
+
+		// have replacement part
+		c++;
+
+		cppMacroReplacementPartInfo * lastReplacement = NULL;
+		int nextParameterReplacementFlags = 0;
+
+#define ADD_REPLACEMENT_NEW_PART(part) \
+		do { \
+			if(lastReplacement) \
+				lastReplacement->next = part; \
+			else \
+				info->replacements = part; \
+			lastReplacement = part; \
+		} while(0)
+
+#define ADD_CONSTANT_REPLACEMENT_NEW_PART(start,len) \
+		do { \
+			cppMacroReplacementPartInfo * rep = \
+				(cppMacroReplacementPartInfo *)eMalloc(sizeof(cppMacroReplacementPartInfo)); \
+			rep->parameterIndex = -1; \
+			rep->flags = 0; \
+			rep->constant = vStringNew(); \
+			vStringNCatS(rep->constant,start,len); \
+			rep->next = NULL; \
+			CXX_DEBUG_PRINT("Constant replacement part: '%s'",vStringValue(rep->constant)); \
+			ADD_REPLACEMENT_NEW_PART(rep); \
+		} while(0)
+
+#define ADD_CONSTANT_REPLACEMENT(start,len) \
+		do { \
+			if(lastReplacement && (lastReplacement->parameterIndex == -1)) \
+			{ \
+				vStringNCatS(lastReplacement->constant,start,len); \
+				CXX_DEBUG_PRINT( \
+						"Constant replacement part changed: '%s'", \
+						vStringValue(lastReplacement->constant) \
+					); \
+			} else { \
+				ADD_CONSTANT_REPLACEMENT_NEW_PART(start,len); \
+			} \
+		} while(0)
+
+		// parse replacements
+		const char * begin = c;
+
+		while(*c)
+		{
+			if(isalpha(*c) || (*c == '_'))
+			{
+				if(c > begin)
+					ADD_CONSTANT_REPLACEMENT(begin,c - begin);
+
+				const char * tokenBegin = c;
+
+				while(*c && (isalnum(*c) || (*c == '_')))
+					c++;
+
+				// check if it is a parameter
+				int tokenLen = c - tokenBegin;
+
+				CXX_DEBUG_PRINT("Check token '%.*s'",tokenLen,tokenBegin);
+
+				bool bIsVarArg = strncmp(tokenBegin,"__VA_ARGS__",tokenLen) == 0;
+
+				int i = 0;
+				for(;i<iParamCount;i++)
+				{
+					int paramLen = paramEnd[i] - paramBegin[i];
+
+					if(
+							(
+								bIsVarArg &&
+								(paramLen == 3) &&
+								(strncmp(paramBegin[i],"...",3) == 0)
+							) || (
+								(!bIsVarArg) &&
+								(paramLen == tokenLen) &&
+								(strncmp(paramBegin[i],tokenBegin,paramLen) == 0)
+							)
+						)
+					{
+						// parameter!
+						cppMacroReplacementPartInfo * rep = \
+								(cppMacroReplacementPartInfo *)eMalloc(sizeof(cppMacroReplacementPartInfo));
+						rep->parameterIndex = i;
+						rep->flags = nextParameterReplacementFlags |
+								(bIsVarArg ? CPP_MACRO_REPLACEMENT_FLAG_VARARGS : 0);
+						rep->constant = NULL;
+						rep->next = NULL;
+
+						nextParameterReplacementFlags = 0;
+
+						CXX_DEBUG_PRINT("Parameter replacement part: %d (vararg %d)",i,bIsVarArg);
+
+						ADD_REPLACEMENT_NEW_PART(rep);
+						break;
+					}
+				}
+
+				if(i >= iParamCount)
+				{
+					// no parameter found
+					ADD_CONSTANT_REPLACEMENT(tokenBegin,tokenLen);
+				}
+
+				begin = c;
+				continue;
+			}
+
+			if((*c == '"') || (*c == '\''))
+			{
+				// skip string/char constant
+				char term = *c;
+				c++;
+				while(*c)
+				{
+					if(*c == '\\')
+					{
+						c++;
+						if(*c)
+							c++;
+					} else if(*c == term)
+					{
+						c++;
+						break;
+					}
+					c++;
+				}
+				continue;
+			}
+
+			if(*c == '#')
+			{
+				// check for token paste/stringification
+				if(c > begin)
+					ADD_CONSTANT_REPLACEMENT(begin,c - begin);
+
+				c++;
+				if(*c == '#')
+				{
+					// token paste
+					CXX_DEBUG_PRINT("Found token paste operator");
+					while(*c == '#')
+						c++;
+
+					// we just skip this part and the followin spaces
+					while(*c && isspacetab(*c))
+						c++;
+
+					if(lastReplacement && (lastReplacement->parameterIndex == -1))
+					{
+						// trim spaces from the last replacement constant!
+						vStringStripTrailing(lastReplacement->constant);
+						CXX_DEBUG_PRINT(
+								"Last replacement truncated to '%s'",
+								vStringValue(lastReplacement->constant)
+							);
+					}
+				} else {
+					// stringification
+					CXX_DEBUG_PRINT("Found stringification operator");
+					nextParameterReplacementFlags |= CPP_MACRO_REPLACEMENT_FLAG_STRINGIFY;
+				}
+
+				begin = c;
+				continue;
+			}
+
+			c++;
+		}
+
+		if(c > begin)
+			ADD_CONSTANT_REPLACEMENT(begin,c - begin);
+	}
+
+	hashTablePutItem(defineMacroTable,eStrndup(identifierBegin,identifierEnd - identifierBegin),info);
+	CXX_DEBUG_LEAVE();
+}
+
+static void freeMacroInfo(cppMacroInfo * info)
 {
 	if(!info)
 		return;
-	if(info->replacement)
-		eFree(info->replacement);
+	cppMacroReplacementPartInfo * pPart = info->replacements;
+	while(pPart)
+	{
+		if(pPart->constant)
+			vStringDelete(pPart->constant);
+		cppMacroReplacementPartInfo * pPartToDelete = pPart;
+		pPart = pPart->next;
+		eFree(pPartToDelete);
+	}
 	eFree(info);
 }
 
-static hashTable *makeIgnoreTokenTable (void)
+static hashTable *makeMacroTable (void)
 {
 	return hashTableNew(
 		1024,
 		hashCstrhash,
 		hashCstreq,
 		free,
-		(void (*)(void *))freeIgnoredTokenInfo
+		(void (*)(void *))freeMacroInfo
 		);
 }
 
@@ -1162,19 +1644,31 @@ static void initializeCpp (const langType language)
 {
 	Cpp.lang = language;
 
-	ignoreTokenTable = makeIgnoreTokenTable ();
+	defineMacroTable = makeMacroTable ();
 }
 
-static void CpreProInstallIgnoreToken (const langType language, const char *name, const char *arg)
+static void CpreProInstallIgnoreToken (const langType language, const char *optname, const char *arg)
 {
 	if (arg == NULL || arg[0] == '\0')
 	{
-		hashTableDelete(ignoreTokenTable);
-		ignoreTokenTable = makeIgnoreTokenTable ();
+		hashTableDelete(defineMacroTable);
+		defineMacroTable = makeMacroTable ();
 		verbose ("    clearing list\n");
+	} else {
+		saveIgnoreToken(arg);
 	}
-	else
-		saveIgnoreToken (arg);
+}
+
+static void CpreProInstallMacroToken (const langType language, const char *optname, const char *arg)
+{
+	if (arg == NULL || arg[0] == '\0')
+	{
+		hashTableDelete(defineMacroTable);
+		defineMacroTable = makeMacroTable ();
+		verbose ("    clearing list\n");
+	} else {
+		saveMacro(arg);
+	}
 }
 
 static void CpreProSetIf0 (const langType language, const char *name, const char *arg)
@@ -1191,6 +1685,10 @@ static parameterHandlerTable CpreProParameterHandlerTable [] = {
 	{ .name = "ignore",
 	  .desc = "a token to be specially handled",
 	  .handleParameter = CpreProInstallIgnoreToken,
+	},
+	{ .name = "define",
+	  .desc = "define replacement for an identifier",
+	  .handleParameter = CpreProInstallMacroToken,
 	},
 };
 

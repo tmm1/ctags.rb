@@ -64,6 +64,7 @@
 #endif
 
 
+#include "ctags.h"
 #include "debug.h"
 #include "entry.h"
 #include "error.h"
@@ -491,15 +492,13 @@ static void batchMakeTags (cookedArgs *args, void *user CTAGS_ATTR_UNUSED)
 }
 
 #ifdef HAVE_JANSSON
-extern void flushTagFile (void);
 void interactiveLoop (cookedArgs *args, void *user CTAGS_ATTR_UNUSED)
 {
   char buffer[1024];
   json_t *request;
 
-  openTagFile ();
-  //fprintf (stdout, "{\"name\": \"" PROGRAM_NAME "\", \"version\": \"" PROGRAM_VERSION "\"}\n");
-  //fflush (stdout);
+  fprintf (stdout, "{\"name\": \"" PROGRAM_NAME "\", \"version\": \"" PROGRAM_VERSION "\"}\n");
+  fflush (stdout);
 
   while (fgets (buffer, sizeof(buffer), stdin)) {
     if (buffer[0] == '\n')
@@ -528,6 +527,7 @@ void interactiveLoop (cookedArgs *args, void *user CTAGS_ATTR_UNUSED)
         goto next;
       }
 
+      openTagFile ();
       if (size == -1) { /* read from disk */
         createTagsForEntry (filename);
       } else {			/* read nbytes from stream */
@@ -537,7 +537,7 @@ void interactiveLoop (cookedArgs *args, void *user CTAGS_ATTR_UNUSED)
         parseFileWithMio (filename, mio);
       }
 
-      flushTagFile ();
+      closeTagFile (false);
       fprintf (stdout, "{\"completed\": \"generate-tags\"}\n");
       fflush(stdout);
     } else {

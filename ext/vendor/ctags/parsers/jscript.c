@@ -102,6 +102,7 @@ typedef enum eTokenType {
 	TOKEN_CLOSE_SQUARE,
 	TOKEN_REGEXP,
 	TOKEN_POSTFIX_OPERATOR,
+	TOKEN_STAR,
 	TOKEN_BINARY_OPERATOR
 } tokenType;
 
@@ -134,6 +135,7 @@ typedef enum {
 	JSTAG_PROPERTY,
 	JSTAG_CONSTANT,
 	JSTAG_VARIABLE,
+	JSTAG_GENERATOR,
 	JSTAG_COUNT
 } jsKind;
 
@@ -143,7 +145,8 @@ static kindOption JsKinds [] = {
 	{ true,  'm', "method",		  "methods"			   },
 	{ true,  'p', "property",	  "properties"		   },
 	{ true,  'C', "constant",	  "constants"		   },
-	{ true,  'v', "variable",	  "global variables"   }
+	{ true,  'v', "variable",	  "global variables"   },
+	{ true,  'g', "generator",	  "generators"		   }
 };
 
 static const keywordTable JsKeywordTable [] = {
@@ -301,7 +304,7 @@ static void makeClassTag (tokenInfo *const token, vString *const signature)
 		if (vStringLength (token->scope) > 0)
 		{
 			vStringCopy(fulltag, token->scope);
-			vStringCatS (fulltag, ".");
+			vStringPut (fulltag, '.');
 			vStringCatS (fulltag, vStringValue(token->string));
 		}
 		else
@@ -317,7 +320,7 @@ static void makeClassTag (tokenInfo *const token, vString *const signature)
 	}
 }
 
-static void makeFunctionTag (tokenInfo *const token, vString *const signature)
+static void makeFunctionTag (tokenInfo *const token, vString *const signature, bool generator)
 {
 	vString *	fulltag;
 
@@ -327,7 +330,7 @@ static void makeFunctionTag (tokenInfo *const token, vString *const signature)
 		if (vStringLength (token->scope) > 0)
 		{
 			vStringCopy(fulltag, token->scope);
-			vStringCatS (fulltag, ".");
+			vStringPut (fulltag, '.');
 			vStringCatS (fulltag, vStringValue(token->string));
 		}
 		else
@@ -337,7 +340,7 @@ static void makeFunctionTag (tokenInfo *const token, vString *const signature)
 		if ( ! stringListHas(FunctionNames, vStringValue (fulltag)) )
 		{
 			stringListAdd (FunctionNames, vStringNewCopy (fulltag));
-			makeJsTag (token, JSTAG_FUNCTION, signature);
+			makeJsTag (token, generator ? JSTAG_GENERATOR : JSTAG_FUNCTION, signature);
 		}
 		vStringDelete (fulltag);
 	}
@@ -548,6 +551,8 @@ getNextChar:
 			}
 
 		case '*':
+			token->type = TOKEN_STAR;
+			break;
 		case '%':
 		case '?':
 		case '>':
@@ -707,6 +712,7 @@ getNextChar:
 		#define IS_BINARY_OPERATOR(t) ((t) == TOKEN_EQUAL_SIGN      || \
 		                               (t) == TOKEN_COLON           || \
 		                               (t) == TOKEN_PERIOD          || \
+		                               (t) == TOKEN_STAR            || \
 		                               (t) == TOKEN_BINARY_OPERATOR)
 
 		if (! IS_STMT_SEPARATOR(LastTokenType) &&
@@ -798,7 +804,7 @@ static void addContext (tokenInfo* const parent, const tokenInfo* const child)
 {
 	if (vStringLength (parent->string) > 0)
 	{
-		vStringCatS (parent->string, ".");
+		vStringPut (parent->string, '.');
 	}
 	vStringCatS (parent->string, vStringValue(child->string));
 }
@@ -807,7 +813,7 @@ static void addToScope (tokenInfo* const token, vString* const extra)
 {
 	if (vStringLength (token->scope) > 0)
 	{
-		vStringCatS (token->scope, ".");
+		vStringPut (token->scope, '.');
 	}
 	vStringCatS (token->scope, vStringValue(extra));
 }
@@ -1029,13 +1035,20 @@ static void parseFunction (tokenInfo *const token)
 	tokenInfo *const name = newToken ();
 	vString *const signature = vStringNew ();
 	bool is_class = false;
+	bool is_generator = false;
 
 	/*
 	 * This deals with these formats
 	 *	   function validFunctionTwo(a,b) {}
+	 *	   function * generator(a,b) {}
 	 */
 
 	readToken (name);
+	if (isType (name, TOKEN_STAR))
+	{
+		is_generator = true;
+		readToken (name);
+	}
 	if (!isType (name, TOKEN_IDENTIFIER))
 		goto cleanUp;
 
@@ -1062,7 +1075,7 @@ static void parseFunction (tokenInfo *const token)
 		if ( is_class )
 			makeClassTag (name, signature);
 		else
-			makeFunctionTag (name, signature);
+			makeFunctionTag (name, signature, is_generator);
 	}
 
 	findCmdTerm (token, false, false);
@@ -1207,8 +1220,15 @@ static bool parseMethods (tokenInfo *const token, tokenInfo *const class)
 				if ( isKeyword (token, KEYWORD_function) )
 				{
 					vString *const signature = vStringNew ();
+					bool is_generator = false;
 
 					readToken (token);
+					if (isType (token, TOKEN_STAR))
+					{
+						/* generator: 'function' '*' '(' ... ')' '{' ... '}' */
+						is_generator = true;
+						readToken (token);
+					}
 					if ( isType (token, TOKEN_OPEN_PAREN) )
 					{
 						skipArgumentList(token, false, signature);
@@ -1218,7 +1238,7 @@ static bool parseMethods (tokenInfo *const token, tokenInfo *const class)
 					{
 						has_methods = true;
 						addToScope (name, class->string);
-						makeJsTag (name, JSTAG_METHOD, signature);
+						makeJsTag (name, is_generator ? JSTAG_GENERATOR : JSTAG_METHOD, signature);
 						parseBlock (token, name);
 
 						/*
@@ -1368,7 +1388,6 @@ nextVar:
 			parseBlock (token, parent);
 
 		/* Potentially the name of the function */
-		readToken (token);
 		if (isType (token, TOKEN_PERIOD))
 		{
 			/*
@@ -1501,6 +1520,8 @@ nextVar:
 					readToken (token);
 			} while (isType (token, TOKEN_PERIOD));
 		}
+		else
+			readToken (token);
 
 		if ( isType (token, TOKEN_OPEN_PAREN) )
 			skipArgumentList(token, false, NULL);
@@ -1571,8 +1592,14 @@ nextVar:
 		if ( isKeyword (token, KEYWORD_function) )
 		{
 			vString *const signature = vStringNew ();
+			bool is_generator = false;
 
 			readToken (token);
+			if (isType (token, TOKEN_STAR))
+			{
+				is_generator = true;
+				readToken (token);
+			}
 
 			if (! isType (token, TOKEN_KEYWORD) &&
 			    ! isType (token, TOKEN_OPEN_PAREN))
@@ -1611,9 +1638,9 @@ nextVar:
 				 */
 				if ( is_inside_class )
 				{
-					makeJsTag (name, JSTAG_METHOD, signature);
+					makeJsTag (name, is_generator ? JSTAG_GENERATOR : JSTAG_METHOD, signature);
 					if ( vStringLength(secondary_name->string) > 0 )
-						makeFunctionTag (secondary_name, signature);
+						makeFunctionTag (secondary_name, signature, is_generator);
 					parseBlock (token, name);
 				}
 				else
@@ -1630,10 +1657,10 @@ nextVar:
 					if ( is_class )
 						makeClassTag (name, signature);
 					else
-						makeFunctionTag (name, signature);
+						makeFunctionTag (name, signature, is_generator);
 
 					if ( vStringLength(secondary_name->string) > 0 )
-						makeFunctionTag (secondary_name, signature);
+						makeFunctionTag (secondary_name, signature, is_generator);
 				}
 			}
 
@@ -1677,7 +1704,7 @@ nextVar:
 					if (vStringLength (token->scope) > 0)
 					{
 						vStringCopy(fulltag, token->scope);
-						vStringCatS (fulltag, ".");
+						vStringPut (fulltag, '.');
 						vStringCatS (fulltag, vStringValue(token->string));
 					}
 					else
@@ -1734,7 +1761,7 @@ nextVar:
 								/* FIXME: we cannot really get a meaningful
 								 * signature from a `new Function()` call,
 								 * so for now just don't set any */
-								makeFunctionTag (name, NULL);
+								makeFunctionTag (name, NULL, false);
 							}
 						}
 					}
@@ -1767,7 +1794,7 @@ nextVar:
 				if (vStringLength (token->scope) > 0)
 				{
 					vStringCopy(fulltag, token->scope);
-					vStringCatS (fulltag, ".");
+					vStringPut (fulltag, '.');
 					vStringCatS (fulltag, vStringValue(token->string));
 				}
 				else
