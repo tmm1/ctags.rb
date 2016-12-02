@@ -516,16 +516,16 @@ void interactiveLoop (cookedArgs *args, void *user CTAGS_ATTR_UNUSED)
       goto next;
     }
 
-    if (!strcmp ("list-parsers", json_string_value (command))) {
-            /* todo */
-    } else if (!strcmp ("generate-tags", json_string_value (command))) {
+    if (!strcmp ("generate-tags", json_string_value (command))) {
       json_int_t size = -1;
       const char *filename;
 
-      if (json_unpack (request, "{s?I ss}", "size", &size, "filename", &filename) == -1) {
+      if (json_unpack (request, "{ss}", "filename", &filename) == -1) {
         error (FATAL, "invalid generate-tags request");
         goto next;
       }
+
+      json_unpack (request, "{sI}", "size", &size);
 
       openTagFile ();
       if (size == -1) { /* read from disk */
@@ -614,7 +614,7 @@ extern int main (int argc CTAGS_ATTR_UNUSED, char **argv)
 
 	setErrorPrinter (stderrDefaultErrorPrinter, NULL);
 	setMainLoop (batchMakeTags, NULL);
-	setTagWriter (WRITER_CTAGS);
+	setTagWriter (WRITER_U_CTAGS);
 
 	setCurrentDirectory ();
 	setExecutableName (*argv++);

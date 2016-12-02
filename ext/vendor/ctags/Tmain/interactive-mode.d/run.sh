@@ -2,6 +2,9 @@
 # License: GPL-2
 
 CTAGS=$1
+. ../utils.sh
+
+is_feature_available ${CTAGS} interactive
 
 echo identification message on startup
 echo =======================================
@@ -38,7 +41,7 @@ echo =======================================
 echo
 echo generate tags from data
 echo =======================================
-size=$(stat -f %z test.rb)
+size=$(filesize test.rb)
 (
   echo '{"command":"generate-tags", "filename":"test.rb", "size":'$size'}'
   cat test.rb

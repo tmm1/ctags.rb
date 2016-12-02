@@ -1,9 +1,20 @@
 __SKIP__=77
 
+skip()
+{
+	echo "$@"
+	exit ${__SKIP__}
+}
+
 remove_commit_id()
 {
     # Remove a commit id embedded in tags file
     sed -i -e '/!_TAG_PROGRAM_VERSION.*/s#/[^/]*/#//#' $1
+}
+
+filesize()
+{
+    wc -c "$1" | awk '{ print $1 }'
 }
 
 is_feature_available()
@@ -12,8 +23,7 @@ is_feature_available()
     local feat=$2
 
     if ! ${ctags} --list-features | grep -q "$feat"; then
-	echo "feature \"$feat\" is not available in $ctags"
-	exit ${__SKIP__}
+		skip "feature \"$feat\" is not available in $ctags"
     fi
 }
 

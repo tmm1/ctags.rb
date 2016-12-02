@@ -14,7 +14,7 @@ module Ctags
       args = [
         '--options=NONE',
         "--options=#{CONFIG}",
-        '--fields=+KlnzsStimfa',
+        '--fields=*',
         '--interactive'
       ]
 

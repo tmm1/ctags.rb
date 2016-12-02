@@ -83,6 +83,10 @@ EXTRA_DIST += misc/units \
     Tmain/input-encoding-option.d/stderr-expected.txt\
     Tmain/input-encoding-option.d/stdout-expected.txt\
     Tmain/input-encoding-option.d/tags-expected.txt\
+    Tmain/interactive-mode.d/run.sh\
+    Tmain/interactive-mode.d/stdout-expected.txt\
+    Tmain/interactive-mode.d/test.c\
+    Tmain/interactive-mode.d/test.rb\
     Tmain/invalid-encoding-option.d/exit-expected.txt\
     Tmain/invalid-encoding-option.d/input.java\
     Tmain/invalid-encoding-option.d/input.js\
@@ -90,6 +94,7 @@ EXTRA_DIST += misc/units \
     Tmain/invalid-encoding-option.d/stderr-expected.txt\
     Tmain/invalid-encoding-option.d/stdout-expected.txt\
     Tmain/json-output-format.d/input.c\
+    Tmain/json-output-format.d/input.go\
     Tmain/json-output-format.d/input.py\
     Tmain/json-output-format.d/run.sh\
     Tmain/json-output-format.d/stdout-expected.txt\
@@ -287,6 +292,8 @@ EXTRA_DIST += misc/units \
     Tmain/output-format-option.d/input.c\
     Tmain/output-format-option.d/run.sh\
     Tmain/output-format-option.d/stdout-expected.txt\
+    Tmain/output-input-field-with-no-escape.d/run.sh\
+    Tmain/output-input-field-with-no-escape.d/stdout-expected.txt\
     Tmain/pattern-length-limit.d/input.java\
     Tmain/pattern-length-limit.d/run.sh\
     Tmain/pattern-length-limit.d/stdout-expected.txt\
@@ -564,6 +571,19 @@ EXTRA_DIST += misc/units \
     Units/parser-ant.r/xpath-based.d/expected.tags\
     Units/parser-ant.r/xpath-based.d/features\
     Units/parser-ant.r/xpath-based.d/input.xml\
+    Units/parser-asm.r/68hc11.asm.d/expected.tags\
+    Units/parser-asm.r/68hc11.asm.d/input.asm\
+    Units/parser-asm.r/bd32.s.d/expected.tags\
+    Units/parser-asm.r/bd32.s.d/input.s\
+    Units/parser-asm.r/bug538629.asm.d/expected.tags\
+    Units/parser-asm.r/bug538629.asm.d/input.asm\
+    Units/parser-asm.r/gas.s.d/args.ctags\
+    Units/parser-asm.r/gas.s.d/expected.tags\
+    Units/parser-asm.r/gas.s.d/input.s\
+    Units/parser-asm.r/masm.asm.d/expected.tags\
+    Units/parser-asm.r/masm.asm.d/input.asm\
+    Units/parser-asm.r/moniker.x68.d/expected.tags\
+    Units/parser-asm.r/moniker.x68.d/input.x68\
     Units/parser-autoconf.r/m4-disable-ac.d/args.ctags\
     Units/parser-autoconf.r/m4-disable-ac.d/expected.tags\
     Units/parser-autoconf.r/m4-disable-ac.d/input.ac\
@@ -590,6 +610,12 @@ EXTRA_DIST += misc/units \
     Units/parser-awk.r/simple-awk.d/input.awk\
     Units/parser-awk.r/simple2-awk.d/expected.tags\
     Units/parser-awk.r/simple2-awk.d/input.awk\
+    Units/parser-c.r/attr-attached-to-array-failed.b/args.ctags\
+    Units/parser-c.r/attr-attached-to-array-failed.b/expected.tags\
+    Units/parser-c.r/attr-attached-to-array-failed.b/input.c\
+    Units/parser-c.r/attr-attached-to-array.d/args.ctags\
+    Units/parser-c.r/attr-attached-to-array.d/expected.tags\
+    Units/parser-c.r/attr-attached-to-array.d/input.c\
     Units/parser-c.r/backslash-in-input.c.d/expected.tags\
     Units/parser-c.r/backslash-in-input.c.d/input.c\
     Units/parser-c.r/bit_field.c.d/args.ctags\
@@ -603,6 +629,9 @@ EXTRA_DIST += misc/units \
     Units/parser-c.r/bug1085585.c.d/input.c\
     Units/parser-c.r/bug1086609.c.d/expected.tags\
     Units/parser-c.r/bug1086609.c.d/input.c\
+    Units/parser-c.r/bug1198.c.d/args.ctags\
+    Units/parser-c.r/bug1198.c.d/expected.tags\
+    Units/parser-c.r/bug1198.c.d/input.c\
     Units/parser-c.r/bug1201689.c.d/expected.tags\
     Units/parser-c.r/bug1201689.c.d/input.c\
     Units/parser-c.r/bug1458930.c.d/args.ctags\
@@ -618,6 +647,9 @@ EXTRA_DIST += misc/units \
     Units/parser-c.r/bug507864.c.d/README\
     Units/parser-c.r/bug507864.c.d/expected.tags\
     Units/parser-c.r/bug507864.c.d/input.c\
+    Units/parser-c.r/bug556645.c.d/README\
+    Units/parser-c.r/bug556645.c.d/expected.tags\
+    Units/parser-c.r/bug556645.c.d/input.c\
     Units/parser-c.r/bug556646.c.d/expected.tags\
     Units/parser-c.r/bug556646.c.d/input.c\
     Units/parser-c.r/bug945.c.d/args.ctags\
@@ -660,6 +692,12 @@ EXTRA_DIST += misc/units \
     Units/parser-c.r/enum.c.d/args.ctags\
     Units/parser-c.r/enum.c.d/expected.tags\
     Units/parser-c.r/enum.c.d/input.c\
+    Units/parser-c.r/extern_variable.h.b/README\
+    Units/parser-c.r/extern_variable.h.b/args.ctags\
+    Units/parser-c.r/extern_variable.h.b/expected.tags\
+    Units/parser-c.r/extern_variable.h.b/input.h\
+    Units/parser-c.r/func_typedef.h.d/expected.tags\
+    Units/parser-c.r/func_typedef.h.d/input.h\
     Units/parser-c.r/if0.c.d/args.ctags\
     Units/parser-c.r/if0.c.d/expected.tags\
     Units/parser-c.r/if0.c.d/input.c\
@@ -678,6 +716,9 @@ EXTRA_DIST += misc/units \
     Units/parser-c.r/option-disable-undef.c.d/args.ctags\
     Units/parser-c.r/option-disable-undef.c.d/expected.tags\
     Units/parser-c.r/option-disable-undef.c.d/input.c\
+    Units/parser-c.r/prototype.h.d/args.ctags\
+    Units/parser-c.r/prototype.h.d/expected.tags\
+    Units/parser-c.r/prototype.h.d/input.h\
     Units/parser-c.r/spurious_label_tags.c.d/args.ctags\
     Units/parser-c.r/spurious_label_tags.c.d/expected.tags\
     Units/parser-c.r/spurious_label_tags.c.d/input.c\
@@ -801,6 +842,9 @@ EXTRA_DIST += misc/units \
     Units/parser-cxx.r/class.cpp.d/args.ctags\
     Units/parser-cxx.r/class.cpp.d/expected.tags\
     Units/parser-cxx.r/class.cpp.d/input.cpp\
+    Units/parser-cxx.r/complex-macros.d/args.ctags\
+    Units/parser-cxx.r/complex-macros.d/expected.tags\
+    Units/parser-cxx.r/complex-macros.d/input.cpp\
     Units/parser-cxx.r/cpp-type-alias-with-using-keyword.d/expected.tags\
     Units/parser-cxx.r/cpp-type-alias-with-using-keyword.d/input.cpp\
     Units/parser-cxx.r/cpp_destructor.cpp.d/expected.tags\
@@ -843,6 +887,9 @@ EXTRA_DIST += misc/units \
     Units/parser-cxx.r/extern.d/args.ctags\
     Units/parser-cxx.r/extern.d/expected.tags\
     Units/parser-cxx.r/extern.d/input.cpp\
+    Units/parser-cxx.r/foreach.d/args.ctags\
+    Units/parser-cxx.r/foreach.d/expected.tags\
+    Units/parser-cxx.r/foreach.d/input.cpp\
     Units/parser-cxx.r/function-return-types.d/args.ctags\
     Units/parser-cxx.r/function-return-types.d/expected.tags\
     Units/parser-cxx.r/function-return-types.d/input.cpp\
@@ -879,6 +926,9 @@ EXTRA_DIST += misc/units \
     Units/parser-cxx.r/properties.cpp.d/args.ctags\
     Units/parser-cxx.r/properties.cpp.d/expected.tags\
     Units/parser-cxx.r/properties.cpp.d/input.cpp\
+    Units/parser-cxx.r/rojas.h.d/args.ctags\
+    Units/parser-cxx.r/rojas.h.d/expected.tags\
+    Units/parser-cxx.r/rojas.h.d/input.h\
     Units/parser-cxx.r/signature.cpp.d/README\
     Units/parser-cxx.r/signature.cpp.d/args.ctags\
     Units/parser-cxx.r/signature.cpp.d/expected.tags\
@@ -1126,6 +1176,31 @@ EXTRA_DIST += misc/units \
     Units/parser-java.r/java-catch-block.d/input.java\
     Units/parser-java.r/java_enum.java.d/expected.tags\
     Units/parser-java.r/java_enum.java.d/input.java\
+    Units/parser-javascript.r/1795612.js.d/README\
+    Units/parser-javascript.r/1795612.js.d/expected.tags\
+    Units/parser-javascript.r/1795612.js.d/input.js\
+    Units/parser-javascript.r/1850914.js.d/expected.tags\
+    Units/parser-javascript.r/1850914.js.d/input.js\
+    Units/parser-javascript.r/1878155.js.d/expected.tags\
+    Units/parser-javascript.r/1878155.js.d/input.js\
+    Units/parser-javascript.r/1880687.js.d/expected.tags\
+    Units/parser-javascript.r/1880687.js.d/input.js\
+    Units/parser-javascript.r/2023624.js.d/expected.tags\
+    Units/parser-javascript.r/2023624.js.d/input.js\
+    Units/parser-javascript.r/3470609.js.d/expected.tags\
+    Units/parser-javascript.r/3470609.js.d/input.js\
+    Units/parser-javascript.r/bug1950327.js.d/expected.tags\
+    Units/parser-javascript.r/bug1950327.js.d/input.js\
+    Units/parser-javascript.r/bug2777310.js.d/expected.tags\
+    Units/parser-javascript.r/bug2777310.js.d/input.js\
+    Units/parser-javascript.r/bug2888482.js.d/expected.tags\
+    Units/parser-javascript.r/bug2888482.js.d/input.js\
+    Units/parser-javascript.r/bug3036476.js.d/expected.tags\
+    Units/parser-javascript.r/bug3036476.js.d/input.js\
+    Units/parser-javascript.r/bug3571233.js.d/expected.tags\
+    Units/parser-javascript.r/bug3571233.js.d/input.js\
+    Units/parser-javascript.r/generators.d/expected.tags\
+    Units/parser-javascript.r/generators.d/input.js\
     Units/parser-javascript.r/js-arraylist.d/expected.tags\
     Units/parser-javascript.r/js-arraylist.d/input.js\
     Units/parser-javascript.r/js-broken-strings.d/expected.tags\
@@ -1201,8 +1276,18 @@ EXTRA_DIST += misc/units \
     Units/parser-javascript.r/js-unterminated-leak.d/input.js\
     Units/parser-javascript.r/js-var-at-eof.d/expected.tags\
     Units/parser-javascript.r/js-var-at-eof.d/input.js\
+    Units/parser-javascript.r/jsFunc_tutorial.js.d/expected.tags\
+    Units/parser-javascript.r/jsFunc_tutorial.js.d/input.js\
+    Units/parser-javascript.r/no_terminator.js.d/expected.tags\
+    Units/parser-javascript.r/no_terminator.js.d/input.js\
+    Units/parser-javascript.r/regexp.js.d/expected.tags\
+    Units/parser-javascript.r/regexp.js.d/input.js\
+    Units/parser-javascript.r/secondary_fcn_name.js.d/expected.tags\
+    Units/parser-javascript.r/secondary_fcn_name.js.d/input.js\
     Units/parser-javascript.r/simple-jsx.d/expected.tags\
     Units/parser-javascript.r/simple-jsx.d/input.jsx\
+    Units/parser-javascript.r/ui5.controller.js.d/expected.tags\
+    Units/parser-javascript.r/ui5.controller.js.d/input.js\
     Units/parser-lua.r/lua-double-equals.d/expected.tags\
     Units/parser-lua.r/lua-double-equals.d/input.lua\
     Units/parser-lua.r/lua-equal-after-function.d/expected.tags\
@@ -1232,6 +1317,8 @@ EXTRA_DIST += misc/units \
     Units/parser-m4.r/m4-switch-lang-by-m4.d/args.ctags\
     Units/parser-m4.r/m4-switch-lang-by-m4.d/expected.tags\
     Units/parser-m4.r/m4-switch-lang-by-m4.d/input.m4\
+    Units/parser-make.r/bug2959889.mak.d/expected.tags\
+    Units/parser-make.r/bug2959889.mak.d/input.mak\
     Units/parser-make.r/make.comment-in-rule.d/expected.tags\
     Units/parser-make.r/make.comment-in-rule.d/input.mak\
     Units/parser-make.r/make.continuation.d/expected.tags\
@@ -1287,6 +1374,9 @@ EXTRA_DIST += misc/units \
     Units/parser-perl.r/perl-autoloader.d/input.pm\
     Units/parser-perl.r/perl-selfloader.d/expected.tags\
     Units/parser-perl.r/perl-selfloader.d/input.pm\
+    Units/parser-perl.r/perl-two-line-package.d/args.ctags\
+    Units/parser-perl.r/perl-two-line-package.d/expected.tags\
+    Units/parser-perl.r/perl-two-line-package.d/input.pm\
     Units/parser-perl.r/simple.pl.d/args.ctags\
     Units/parser-perl.r/simple.pl.d/expected.tags\
     Units/parser-perl.r/simple.pl.d/input.pl\
@@ -1318,6 +1408,9 @@ EXTRA_DIST += misc/units \
     Units/parser-php.r/php-classes.d/args.ctags\
     Units/parser-php.r/php-classes.d/expected.tags\
     Units/parser-php.r/php-classes.d/input.php\
+    Units/parser-php.r/php-full-qualified-tags-no-esc.d/args.ctags\
+    Units/parser-php.r/php-full-qualified-tags-no-esc.d/expected.tags\
+    Units/parser-php.r/php-full-qualified-tags-no-esc.d/input.php\
     Units/parser-php.r/php-full-qualified-tags.d/args.ctags\
     Units/parser-php.r/php-full-qualified-tags.d/expected.tags\
     Units/parser-php.r/php-full-qualified-tags.d/input.php\
@@ -1583,6 +1676,8 @@ EXTRA_DIST += misc/units \
     Units/parser-sql.r/partial.d/input.sql\
     Units/parser-sql.r/sql_pgSQL_empty_decl.d/expected.tags\
     Units/parser-sql.r/sql_pgSQL_empty_decl.d/input.sql\
+    Units/parser-tcl.r/simple.tcl.d/expected.tags\
+    Units/parser-tcl.r/simple.tcl.d/input.tcl\
     Units/parser-ttcn.r/ttcn-altstep.d/args.ctags\
     Units/parser-ttcn.r/ttcn-altstep.d/expected.tags\
     Units/parser-ttcn.r/ttcn-altstep.d/input.ttcn\
@@ -1750,30 +1845,14 @@ EXTRA_DIST += misc/units \
     Units/regex-with-scope.d/args.ctags\
     Units/regex-with-scope.d/expected.tags\
     Units/regex-with-scope.d/input.foo\
-    Units/review-needed.r/1795612.js.t/expected.tags\
-    Units/review-needed.r/1795612.js.t/input.js\
-    Units/review-needed.r/1850914.js.t/expected.tags\
-    Units/review-needed.r/1850914.js.t/input.js\
-    Units/review-needed.r/1878155.js.t/expected.tags\
-    Units/review-needed.r/1878155.js.t/input.js\
-    Units/review-needed.r/1880687.js.t/expected.tags\
-    Units/review-needed.r/1880687.js.t/input.js\
-    Units/review-needed.r/2023624.js.t/expected.tags\
-    Units/review-needed.r/2023624.js.t/input.js\
     Units/review-needed.r/3184782.sql.t/expected.tags\
     Units/review-needed.r/3184782.sql.t/input.sql\
-    Units/review-needed.r/3470609.js.t/expected.tags\
-    Units/review-needed.r/3470609.js.t/input.js\
     Units/review-needed.r/3526726.tex.t/expected.tags\
     Units/review-needed.r/3526726.tex.t/input.tex\
-    Units/review-needed.r/68hc11.asm.t/expected.tags\
-    Units/review-needed.r/68hc11.asm.t/input.asm\
     Units/review-needed.r/array_ref_and_out.cs.t/expected.tags\
     Units/review-needed.r/array_ref_and_out.cs.t/input.cs\
     Units/review-needed.r/attributes.cs.t/expected.tags\
     Units/review-needed.r/attributes.cs.t/input.cs\
-    Units/review-needed.r/bd32.s.t/expected.tags\
-    Units/review-needed.r/bd32.s.t/input.s\
     Units/review-needed.r/bug1324663.sql.t/expected.tags\
     Units/review-needed.r/bug1324663.sql.t/input.sql\
     Units/review-needed.r/bug1428714.sql.t/expected.tags\
@@ -1802,8 +1881,6 @@ EXTRA_DIST += misc/units \
     Units/review-needed.r/bug1938565.sql.t/input.sql\
     Units/review-needed.r/bug1944150.sql.t/expected.tags\
     Units/review-needed.r/bug1944150.sql.t/input.sql\
-    Units/review-needed.r/bug1950327.js.t/expected.tags\
-    Units/review-needed.r/bug1950327.js.t/input.js\
     Units/review-needed.r/bug2049723.java.t/expected.tags\
     Units/review-needed.r/bug2049723.java.t/input.java\
     Units/review-needed.r/bug2117073.java.t/expected.tags\
@@ -1812,25 +1889,10 @@ EXTRA_DIST += misc/units \
     Units/review-needed.r/bug2374109.vhd.t/input.vhd\
     Units/review-needed.r/bug2411878.cs.t/expected.tags\
     Units/review-needed.r/bug2411878.cs.t/input.cs\
-    Units/review-needed.r/bug2777310.js.t/expected.tags\
-    Units/review-needed.r/bug2777310.js.t/input.js\
     Units/review-needed.r/bug2886870.tex.t/expected.tags\
     Units/review-needed.r/bug2886870.tex.t/input.tex\
-    Units/review-needed.r/bug2888482.js.t/expected.tags\
-    Units/review-needed.r/bug2888482.js.t/input.js\
-    Units/review-needed.r/bug2959889.mak.t/expected.tags\
-    Units/review-needed.r/bug2959889.mak.t/input.mak\
     Units/review-needed.r/bug2961855.sql.t/expected.tags\
     Units/review-needed.r/bug2961855.sql.t/input.sql\
-    Units/review-needed.r/bug3036476.js.t/expected.tags\
-    Units/review-needed.r/bug3036476.js.t/input.js\
-    Units/review-needed.r/bug3571233.js.t/expected.tags\
-    Units/review-needed.r/bug3571233.js.t/input.js\
-    Units/review-needed.r/bug538629.asm.t/expected.tags\
-    Units/review-needed.r/bug538629.asm.t/input.asm\
-    Units/review-needed.r/bug556645.c.t/README\
-    Units/review-needed.r/bug556645.c.t/expected.tags\
-    Units/review-needed.r/bug556645.c.t/input.c\
     Units/review-needed.r/bug612019.pas.t/expected.tags\
     Units/review-needed.r/bug612019.pas.t/input.pas\
     Units/review-needed.r/bug629115.sql.t/expected.tags\
@@ -1854,14 +1916,8 @@ EXTRA_DIST += misc/units \
     Units/review-needed.r/enum.java.t/input.java\
     Units/review-needed.r/events.cs.t/expected.tags\
     Units/review-needed.r/events.cs.t/input.cs\
-    Units/review-needed.r/extern_variable.h.t/expected.tags\
-    Units/review-needed.r/extern_variable.h.t/input.h\
     Units/review-needed.r/flex_override.mxml.t/expected.tags\
     Units/review-needed.r/flex_override.mxml.t/input.mxml\
-    Units/review-needed.r/func_typedef.h.t/expected.tags\
-    Units/review-needed.r/func_typedef.h.t/input.h\
-    Units/review-needed.r/gas.s.t/expected.tags\
-    Units/review-needed.r/gas.s.t/input.s\
     Units/review-needed.r/general.cs.t/expected.tags\
     Units/review-needed.r/general.cs.t/input.cs\
     Units/review-needed.r/generalized_stack.ads.t/expected.tags\
@@ -1889,8 +1945,6 @@ EXTRA_DIST += misc/units \
     Units/review-needed.r/jbrown.vr.t/args.ctags\
     Units/review-needed.r/jbrown.vr.t/expected.tags\
     Units/review-needed.r/jbrown.vr.t/input.vr\
-    Units/review-needed.r/jsFunc_tutorial.js.t/expected.tags\
-    Units/review-needed.r/jsFunc_tutorial.js.t/input.js\
     Units/review-needed.r/keyword_abstract.cs.t/expected.tags\
     Units/review-needed.r/keyword_abstract.cs.t/input.cs\
     Units/review-needed.r/keyword_catch_try.cs.t/expected.tags\
@@ -1939,8 +1993,6 @@ EXTRA_DIST += misc/units \
     Units/review-needed.r/keyword_volatile.cs.t/input.cs\
     Units/review-needed.r/labels.sql.t/expected.tags\
     Units/review-needed.r/labels.sql.t/input.sql\
-    Units/review-needed.r/masm.asm.t/expected.tags\
-    Units/review-needed.r/masm.asm.t/input.asm\
     Units/review-needed.r/matlab_backtracking.m.t/expected.tags\
     Units/review-needed.r/matlab_backtracking.m.t/features\
     Units/review-needed.r/matlab_backtracking.m.t/input.m\
@@ -1951,10 +2003,6 @@ EXTRA_DIST += misc/units \
     Units/review-needed.r/maze.erl.t/input.erl\
     Units/review-needed.r/maze.hrl.t/expected.tags\
     Units/review-needed.r/maze.hrl.t/input.hrl\
-    Units/review-needed.r/moniker.x68.t/expected.tags\
-    Units/review-needed.r/moniker.x68.t/input.x68\
-    Units/review-needed.r/no_terminator.js.t/expected.tags\
-    Units/review-needed.r/no_terminator.js.t/input.js\
     Units/review-needed.r/ocamlAllKinds.ml.t/expected.tags\
     Units/review-needed.r/ocamlAllKinds.ml.t/input.ml\
     Units/review-needed.r/ocamlCommentInStringAllowed.ml.t/expected.tags\
@@ -1965,13 +2013,8 @@ EXTRA_DIST += misc/units \
     Units/review-needed.r/ocaml_onlystr.ml.t/input.ml\
     Units/review-needed.r/ocaml_stringTsts.ml.t/expected.tags\
     Units/review-needed.r/ocaml_stringTsts.ml.t/input.ml\
-    Units/review-needed.r/perl-two-line-package.t/args.ctags\
-    Units/review-needed.r/perl-two-line-package.t/expected.tags\
-    Units/review-needed.r/perl-two-line-package.t/input.pm\
     Units/review-needed.r/property.cs.t/expected.tags\
     Units/review-needed.r/property.cs.t/input.cs\
-    Units/review-needed.r/prototype.h.t/expected.tags\
-    Units/review-needed.r/prototype.h.t/input.h\
     Units/review-needed.r/random.sql.t/expected.tags\
     Units/review-needed.r/random.sql.t/input.sql\
     Units/review-needed.r/readlob.sql.t/expected.tags\
@@ -1980,12 +2023,6 @@ EXTRA_DIST += misc/units \
     Units/review-needed.r/readlong.sql.t/input.sql\
     Units/review-needed.r/refcurs.sql.t/expected.tags\
     Units/review-needed.r/refcurs.sql.t/input.sql\
-    Units/review-needed.r/regexp.js.t/expected.tags\
-    Units/review-needed.r/regexp.js.t/input.js\
-    Units/review-needed.r/rojas.h.t/expected.tags\
-    Units/review-needed.r/rojas.h.t/input.h\
-    Units/review-needed.r/secondary_fcn_name.js.t/expected.tags\
-    Units/review-needed.r/secondary_fcn_name.js.t/input.js\
     Units/review-needed.r/simple.asp.t/expected.tags\
     Units/review-needed.r/simple.asp.t/input.asp\
     Units/review-needed.r/simple.bas.t/expected.tags\
@@ -2005,8 +2042,6 @@ EXTRA_DIST += misc/units \
     Units/review-needed.r/simple.pb.t/input.pb\
     Units/review-needed.r/simple.sml.t/expected.tags\
     Units/review-needed.r/simple.sml.t/input.sml\
-    Units/review-needed.r/simple.tcl.t/expected.tags\
-    Units/review-needed.r/simple.tcl.t/input.tcl\
     Units/review-needed.r/simple.vr.t/args.ctags\
     Units/review-needed.r/simple.vr.t/expected.tags\
     Units/review-needed.r/simple.vr.t/input.vr\
@@ -2014,8 +2049,6 @@ EXTRA_DIST += misc/units \
     Units/review-needed.r/sql_single_quote.sql.t/input.sql\
     Units/review-needed.r/test.vhd.t/expected.tags\
     Units/review-needed.r/test.vhd.t/input.vhd\
-    Units/review-needed.r/ui5.controller.js.t/expected.tags\
-    Units/review-needed.r/ui5.controller.js.t/input.js\
     Units/review-needed.r/unicode8.java.t/expected.tags\
     Units/review-needed.r/unicode8.java.t/input.java\
     Units/simple-clojure.d/expected.tags\

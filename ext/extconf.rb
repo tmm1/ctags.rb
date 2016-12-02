@@ -17,7 +17,7 @@ xsystem('pwd') # to create mkmf.log before the chdir
 
 Dir.chdir("#{CWD}/vendor/jansson-2.9") do
   sys "./configure --prefix=#{CWD}/dst --disable-shared" unless File.exists?('config.h')
-  sys "touch *"
+  sys "touch configure aclocal.m4 Makefile.am Makefile.in"
   sys "make install"
 end
 

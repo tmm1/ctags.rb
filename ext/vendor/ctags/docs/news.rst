@@ -284,7 +284,7 @@ header is easy because it starts with a `#` character.
 ``--with-list-header=no`` suppresses output of the column header.
 
 Kinds synchronization
-----------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In Universal-ctags, as in Exuberant-ctags, most kinds are parser
 local; enabling (or disabling) a kind in a parser has no effect on
@@ -589,6 +589,13 @@ will be processed as
 
 	int x(int a,int b);
 
+``--interactive`` Mode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A new ``--interactive`` option launches a JSON based command REPL which
+can be used to control ctags generation programatically.
+
+See :ref:`--interactive Mode <interactive-mode>` for more details.
 
 Changes to the tags file format
 ---------------------------------------------------------------------
@@ -873,6 +880,14 @@ The third line means `\\` is used when for combining a namespace item
 Of course, ctags uses the more specific line when choosing a
 separator; the third line has higher priority than the first.
 
+``TAG_OUTPUT_MODE``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. NOT REVIEWED YET
+
+This pseudo tag represents output mode: u-ctags or e-ctags.
+
+See also :ref:`Compatible output and weakness <compat-output>`.
 
 Parser own fields
 ---------------------------------------------------------------------
