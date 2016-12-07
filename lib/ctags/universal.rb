@@ -55,15 +55,18 @@ module Ctags
 
       while line = @out.gets
         obj = Yajl.load(line, :symbolize_keys => true)
-        if obj[:error] && obj[:fatal]
-          raise obj[:error]
-        elsif obj[:error]
-          warnings << obj
-        elsif obj[:_type] == 'tag'
+        case obj[:_type]
+        when "tag"
           obj.delete :_type
           obj[:pattern].strip!
           tags << obj
-        elsif obj[:completed]
+        when "error"
+          if obj[:fatal]
+            raise obj[:message]
+          else
+            warnings << obj if obj[:warning]
+          end
+        when "completed"
           break
         else
           raise "unknown obj: #{obj.inspect}"
@@ -71,7 +74,7 @@ module Ctags
       end
 
       if tags.empty? and warnings.any?
-        raise Error, warnings[0][:error]
+        raise Error, warnings[0][:message]
       end
 
       tags
