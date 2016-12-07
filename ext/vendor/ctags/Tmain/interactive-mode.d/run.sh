@@ -43,6 +43,6 @@ echo generate tags from data
 echo =======================================
 size=$(filesize test.rb)
 (
-  echo '{"command":"generate-tags", "filename":"test.rb", "size":'$size'}'
+  echo '{"command":"generate-tags", "filename":"foobar.rb", "size":'$size'}'
   cat test.rb
 ) | ${CTAGS} --interactive

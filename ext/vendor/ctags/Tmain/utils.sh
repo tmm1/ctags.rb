@@ -14,7 +14,7 @@ remove_commit_id()
 
 filesize()
 {
-    wc -c "$1" | awk '{ print $1 }'
+    wc -c < "$1"
 }
 
 is_feature_available()

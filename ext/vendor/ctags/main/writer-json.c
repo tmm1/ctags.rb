@@ -42,11 +42,13 @@ tagWriter jsonWriter = {
 };
 
 
-static json_t* escapeFieldValue (const tagEntryInfo * tag, fieldType ftype)
+static json_t* escapeFieldValue (const tagEntryInfo * tag, fieldType ftype, bool returnEmptyStringAsNoValue)
 {
 	const char *str = renderFieldEscaped (jsonWriter.type, ftype, tag, NO_PARSER_FIELD, NULL);
 	if (str)
 		return json_string (str);
+	else if (returnEmptyStringAsNoValue)
+		return json_string ("");
 	else
 		return NULL;
 }
@@ -69,7 +71,7 @@ static void renderExtensionFieldMaybe (int xftype, const tagEntryInfo *const tag
 			break;
 		default:
 			json_object_set_new (response, fname,
-					     escapeFieldValue (tag, xftype));
+					     escapeFieldValue (tag, xftype, false));
 		}
 	}
 }
@@ -116,19 +118,11 @@ static void addExtensionFields (json_t *response, const tagEntryInfo *const tag)
 static int writeJsonEntry (tagWriter *writer CTAGS_ATTR_UNUSED,
 			       MIO * mio, const tagEntryInfo *const tag)
 {
-	const char *pattern = tag->pattern;
-	if (!pattern)
-	{
-		pattern = makePatternString (tag);
-	}
-
-	json_t *response = json_pack ("{ss ss ss ss}",
+	json_t *response = json_pack ("{ss ss ss so}",
 		"_type", "tag",
 		"name", tag->name,
 		"path", tag->sourceFileName,
-		/* --extra=f option can generates a tag with NULL pattern. */
-		"pattern", pattern? pattern: ""
-	);
+		"pattern", escapeFieldValue(tag, FIELD_PATTERN, true));
 
 	if (includeExtensionFlags ())
 	{
