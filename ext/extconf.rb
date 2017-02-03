@@ -21,9 +21,8 @@ Dir.chdir("#{CWD}/vendor/jansson-2.9") do
   sys "make install"
 end
 
-ENV['CFLAGS']  = "-ggdb -I#{CWD}/dst/include"
-ENV['LDFLAGS'] = "-L#{CWD}/dst/lib"
-ENV['LIBS']    = "-ljansson"
+ENV['JANSSON_CFLAGS']  = "-ggdb -I#{CWD}/dst/include"
+ENV['JANSSON_LIBS'] = "-L#{CWD}/dst/lib -ljansson"
 
 Dir.chdir("#{CWD}/vendor/ctags") do
   sys "./configure --prefix=#{CWD}/dst" unless File.exists?('config.h')
